@@ -10,10 +10,10 @@ terraform {
 provider "aws" {
   region      = "${var.aws_region}"
 }
-provider "aws" {
-  region  = "us-east-1"
-  alias   = "us-east-1"
-}
+# provider "aws" {
+#   region  = "us-east-1"
+#   alias   = "us-east-1"
+# }
 
 data "archive_file" "file" {
   type        = "zip"
@@ -32,6 +32,7 @@ resource "aws_lambda_function" "lambda_function_originRequest" {
   timeout          = 1
 }
 
+
 resource "aws_lambda_function" "lambda_function_originResponse" {
   function_name    = "lambda_function_originResponse"
   filename         = "lambda.zip"
@@ -43,25 +44,28 @@ resource "aws_lambda_function" "lambda_function_originResponse" {
   timeout          = 1
 }
 
-resource "aws_iam_role" "iam_role" {
-  name               = "goLambda"
-  assume_role_policy = <<POLICY
-{
-  "Version": "2012-10-17",
-  "Statement": {
-    "Action": "sts:AssumeRole",
-    "Principal": {
-      "Service": "lambda.amazonaws.com"
-    },
-    "Effect": "Allow"
+data "aws_iam_policy_document" "instance_role" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com", "edgelambda.amazonaws.com"]
+    }
   }
 }
-POLICY
+resource "aws_iam_role" "iam_role" {
+  name = "iam_for_lambda"
+
+  assume_role_policy = "${data.aws_iam_policy_document.instance_role.json}"
 }
+
+
 resource "aws_s3_bucket" "s3_bucket" {
-  bucket        = "${var.name}"
+  bucket        = "s3-bucket-${var.name}"
   # policy        = "${data.template_file.bucket_policy.rendered}"
-  force_destroy = true
+  # force_destroy = true
 
   website {
     index_document = "index.html"
@@ -71,7 +75,7 @@ resource "aws_s3_bucket" "s3_bucket" {
 }
 
 data "aws_acm_certificate" "acm_certificate" {
-  provider = "aws.us-east-1"
+  # provider = "aws.us-east-1"
 
   domain   = "${var.domain_name}"
   statuses = ["ISSUED"]
@@ -84,7 +88,7 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
   http_version = "http1.1"
 
   origin {
-    origin_id = "origin-bucket-${aws_s3_bucket.s3_bucket.id}"
+    origin_id = "${aws_s3_bucket.s3_bucket.id}"
 
     # This is the endpoint of the s3 bucket
     domain_name = "${aws_s3_bucket.s3_bucket.website_endpoint}"
@@ -114,20 +118,20 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
     }
 
     lambda_function_association {
-      event_type = "origin-response"
-      lambda_arn = "${aws_lambda_function.lambda_function_originRequest.arn}"
+      event_type = "origin-request"
+      lambda_arn = "${aws_lambda_function.lambda_function_originRequest.arn}:1"
     }
 
     lambda_function_association {
       event_type = "origin-response"
-      lambda_arn = "${aws_lambda_function.lambda_function_originResponse.arn}"
+      lambda_arn = "${aws_lambda_function.lambda_function_originResponse.arn}:1"
     }
 
     min_ttl = "0"
 
     default_ttl      = "300"                           
     max_ttl          = "1200"                         
-    target_origin_id = "origin-bucket-${var.name}"
+    target_origin_id = "${aws_s3_bucket.s3_bucket.id}"
 
     viewer_protocol_policy = "redirect-to-https"
     compress               = true
@@ -146,27 +150,23 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
 
 }
 
-# data "aws_route53_zone" "selected" {
-#   count = "${length(var.domain_names)}"
+data "aws_route53_zone" "route53_zome" {
+  name = "${var.domain_name}"
+}
 
-#   # This will get the domain from the full domain name (with sub domain) and then retrieve the right zone.
-#   name = "${element(split(".", var.domain_name),0) != "" ? replace(var.domain_name,"${element(split(".", var.domain_name),0)}.", "") : replace(var.domain_name, "/(^)[.]/", "")}"
-# }
+# // TTL 60 seconds.
+resource "aws_route53_record" "route53_record" {
+  zone_id = "${data.aws_route53_zone.route53_zome.zone_id}"
+  name    = "${replace(var.domain_name, "/(^)[.]/", "")}"
+  type    = "A"
 
-# # // TTL 60 seconds.
-# resource "aws_route53_record" "elb_alias" {
-#   count   = "${length(var.domain_names)}"
-#   zone_id = "${element(data.aws_route53_zone.selected.*.zone_id, count.index)}"
-#   name    = "${replace(var.domain_name, "/(^)[.]/", "")}"
-#   type    = "A"
+  alias {
+    name = "${aws_cloudfront_distribution.cloudfront_distribution.domain_name}"
 
-#   alias {
-#     name = "${element(var.cloudfront_domain_names, count.index)}"
-
-#     zone_id                = "${element(var.cloudfront_hostzone_ids, count.index)}"
-#     evaluate_target_health = false
-#   }
-# }
+    zone_id                = "${aws_cloudfront_distribution.cloudfront_distribution.hosted_zone_id}"
+    evaluate_target_health = false
+  }
+}
 
 # resource "aws_lambda_permission" "goLambda" {
 #   statement_id  = "AllowAPIGatewayInvoke"

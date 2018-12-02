@@ -9,9 +9,14 @@ init: env
 plan: env lambda
 	terraform plan
 
+apply: env lambda
+	terraform apply
+	aws s3  cp  ./website/index.html s3://wgl-site/index.html
+
 lambda:
 	zip -r lambda -X lambda.zip
 
 env: 
 	export AWS_PROFILE=personal
+	export AWS_DEFAULT_REGION=eu-east-1
 
