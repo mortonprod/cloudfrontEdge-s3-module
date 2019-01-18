@@ -95,14 +95,19 @@ resource "aws_iam_role_policy_attachment" "iam_role_policy_attachment" {
 
 resource "aws_s3_bucket" "s3_bucket" {
   bucket        = "s3-bucket-${var.name}"
+    # acl    = "public-read"
   # policy        = "${data.template_file.bucket_policy.rendered}"
   # force_destroy = true
 
-  website {
-    index_document = "index.html"
-    error_document = "404.html"
-  }
+  # website {
+  #   index_document = "index.html"
+  #   error_document = "404.html"
+  # }
 
+}
+
+resource "aws_cloudfront_origin_access_identity" "cloudfront_origin_access_identity" {
+  comment = "${var.name}"
 }
 
 resource "aws_s3_bucket_object" "s3_bucket_object" {
@@ -111,7 +116,7 @@ resource "aws_s3_bucket_object" "s3_bucket_object" {
   source = "./website/index.html"
 }
 
-resource "aws_s3_bucket_policy" "b" {
+resource "aws_s3_bucket_policy" "s3_bucket_policy" {
   bucket = "${aws_s3_bucket.s3_bucket.id}"
 
   policy = <<POLICY
@@ -123,10 +128,10 @@ resource "aws_s3_bucket_policy" "b" {
             "Sid": "Stmt1380877761162",
             "Effect": "Allow",
             "Principal": {
-                "AWS": "*"
+                "AWS": "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_origin_access_identity.cloudfront_origin_access_identity.id}"
             },
             "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::s3-bucket-${var.name}/*"
+            "Resource": "arn:aws:s3:::s3-bucket-${var.name}/*.html"
         }
     ]
 }
@@ -151,14 +156,17 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
     origin_id = "${aws_s3_bucket.s3_bucket.id}"
 
     # This is the endpoint of the s3 bucket
-    domain_name = "${aws_s3_bucket.s3_bucket.website_endpoint}"
+    domain_name = "${aws_s3_bucket.s3_bucket.bucket_regional_domain_name}"
 
-    custom_origin_config {
-      origin_protocol_policy = "https-only"
+    # custom_origin_config {
+    #   origin_protocol_policy = "https-only"
 
-      http_port            = "80"
-      https_port           = "443"
-      origin_ssl_protocols = ["TLSv1"]
+    #   http_port            = "80"
+    #   https_port           = "443"
+    #   origin_ssl_protocols = ["TLSv1"]
+    # }
+    s3_origin_config {
+      origin_access_identity = "origin-access-identity/cloudfront/${aws_cloudfront_origin_access_identity.cloudfront_origin_access_identity.id}"
     }
   }
 
