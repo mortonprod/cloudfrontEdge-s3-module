@@ -5,6 +5,7 @@ variable "aws_region" {
   default = "us-east-1"
 }
 
-variable "domain_name" {
-  default = "www.alex-test-site.co.uk"
+variable "domain_names" {
+  description = "Only supports sub domain changes"
+  default = ["www.alex-test-site.co.uk", "test.alex-test-site.co.uk"]
 }

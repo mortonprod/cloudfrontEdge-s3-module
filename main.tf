@@ -140,9 +140,10 @@ POLICY
 
 
 data "aws_acm_certificate" "acm_certificate" {
+  # count = "${length(var.domain_names)}"
   # provider = "aws.us-east-1"
 
-  domain   = "${element(split(".", var.domain_name),0) != "" ? replace(var.domain_name,"${element(split(".", var.domain_name),0)}.", "") : replace(var.domain_name, "/(^)[.]/", "")}"
+  domain   = "${element(split(".", var.domain_names[0]),0) != "" ? replace(var.domain_names[0],"${element(split(".", var.domain_names[0]),0)}.", "") : replace(var.domain_names[0], "/(^)[.]/", "")}"
   statuses = ["ISSUED"]
 }
 
@@ -214,18 +215,20 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1"
   }
-  aliases = ["${var.domain_name}"]
+  aliases = "${var.domain_names}"
 
 }
 
 data "aws_route53_zone" "route53_zome" {
-  name = "${element(split(".", var.domain_name),0) != "" ? replace(var.domain_name,"${element(split(".", var.domain_name),0)}.", "") : replace(var.domain_name, "/(^)[.]/", "")}"
+  # count = "${length(var.domain_names)}"
+  name = "${element(split(".", var.domain_names[0]),0) != "" ? replace(var.domain_names[0],"${element(split(".", var.domain_names[0]),0)}.", "") : replace(var.domain_names[0], "/(^)[.]/", "")}"
 }
 
 # // TTL 60 seconds.
 resource "aws_route53_record" "route53_record" {
+  count = "${length(var.domain_names)}"
   zone_id = "${data.aws_route53_zone.route53_zome.zone_id}"
-  name    = "${var.domain_name}"
+  name    = "${var.domain_names[count.index]}"
   type    = "A"
 
   alias {
