@@ -30,6 +30,7 @@ resource "aws_lambda_function" "lambda_function_originRequest" {
   runtime          = "nodejs8.10"
   memory_size      = 128
   timeout          = 1
+  publish = true
 }
 
 
@@ -42,6 +43,31 @@ resource "aws_lambda_function" "lambda_function_originResponse" {
   runtime          = "nodejs8.10"
   memory_size      = 128
   timeout          = 1
+  publish = true
+}
+
+# resource "aws_lambda_alias" "lambda_alias" {
+#   name             = "testalias"
+#   description      = "a sample description"
+#   function_name    = "${aws_lambda_function.lambda_function_originResponse.arn}"
+#   function_version = "1"
+# }
+
+
+resource "aws_lambda_permission" "lambda_permission_request" {
+  statement_id   = "AllowExecutionFromCloudFront"
+  action         = "lambda:GetFunction"
+  function_name  = "${aws_lambda_function.lambda_function_originRequest.function_name}"
+  principal      = "replicator.lambda.amazonaws.com"
+  # qualifier = "1"
+}
+
+resource "aws_lambda_permission" "lambda_permission_response" {
+  statement_id   = "AllowExecutionFromCloudFront"
+  action         = "lambda:GetFunction"
+  function_name  = "${aws_lambda_function.lambda_function_originResponse.function_name}"
+  principal      = "replicator.lambda.amazonaws.com"
+  # qualifier = "1"
 }
 
 data "aws_iam_policy_document" "instance_role" {
@@ -61,6 +87,11 @@ resource "aws_iam_role" "iam_role" {
   assume_role_policy = "${data.aws_iam_policy_document.instance_role.json}"
 }
 
+resource "aws_iam_role_policy_attachment" "iam_role_policy_attachment" {
+  role = "${aws_iam_role.iam_role.name}"
+  policy_arn = "arn:aws:iam::442357565108:policy/service-role/AWSLambdaEdgeExecutionRole-e2b0323f-afc0-4d83-b256-b43117520803"
+}
+
 
 resource "aws_s3_bucket" "s3_bucket" {
   bucket        = "s3-bucket-${var.name}"
@@ -77,7 +108,7 @@ resource "aws_s3_bucket" "s3_bucket" {
 data "aws_acm_certificate" "acm_certificate" {
   # provider = "aws.us-east-1"
 
-  domain   = "${var.domain_name}"
+  domain   = "${element(split(".", var.domain_name),0) != "" ? replace(var.domain_name,"${element(split(".", var.domain_name),0)}.", "") : replace(var.domain_name, "/(^)[.]/", "")}"
   statuses = ["ISSUED"]
 }
 
@@ -151,13 +182,13 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
 }
 
 data "aws_route53_zone" "route53_zome" {
-  name = "${var.domain_name}"
+  name = "${element(split(".", var.domain_name),0) != "" ? replace(var.domain_name,"${element(split(".", var.domain_name),0)}.", "") : replace(var.domain_name, "/(^)[.]/", "")}"
 }
 
 # // TTL 60 seconds.
 resource "aws_route53_record" "route53_record" {
   zone_id = "${data.aws_route53_zone.route53_zome.zone_id}"
-  name    = "${replace(var.domain_name, "/(^)[.]/", "")}"
+  name    = "${var.domain_name}"
   type    = "A"
 
   alias {
