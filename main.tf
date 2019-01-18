@@ -105,6 +105,35 @@ resource "aws_s3_bucket" "s3_bucket" {
 
 }
 
+resource "aws_s3_bucket_object" "s3_bucket_object" {
+  bucket = "${aws_s3_bucket.s3_bucket.id}"
+  key    = "index.html"
+  source = "./website/index.html"
+}
+
+resource "aws_s3_bucket_policy" "b" {
+  bucket = "${aws_s3_bucket.s3_bucket.id}"
+
+  policy = <<POLICY
+{
+    "Version": "2008-10-17",
+    "Id": "Policy1380877762691",
+    "Statement": [
+        {
+            "Sid": "Stmt1380877761162",
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": "s3:GetObject",
+            "Resource": "arn:aws:s3:::s3-bucket-${var.name}/*"
+        }
+    ]
+}
+POLICY
+}
+
+
 data "aws_acm_certificate" "acm_certificate" {
   # provider = "aws.us-east-1"
 
