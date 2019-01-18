@@ -112,6 +112,7 @@ resource "aws_cloudfront_origin_access_identity" "cloudfront_origin_access_ident
 
 resource "aws_s3_bucket_object" "s3_bucket_object" {
   bucket = "${aws_s3_bucket.s3_bucket.id}"
+  content_type = "text/html"
   key    = "index.html"
   source = "./website/index.html"
 }
