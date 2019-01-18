@@ -110,11 +110,18 @@ resource "aws_cloudfront_origin_access_identity" "cloudfront_origin_access_ident
   comment = "${var.name}"
 }
 
-resource "aws_s3_bucket_object" "s3_bucket_object" {
+resource "aws_s3_bucket_object" "s3_bucket_object_html" {
   bucket = "${aws_s3_bucket.s3_bucket.id}"
   content_type = "text/html"
   key    = "index.html"
-  source = "./website/index.html"
+  source = "./website/dist/index.html"
+}
+
+resource "aws_s3_bucket_object" "s3_bucket_object_js" {
+  bucket = "${aws_s3_bucket.s3_bucket.id}"
+  content_type = "text/js"
+  key    = "app.bundle.js"
+  source = "./website/dist/app.bundle.js"
 }
 
 resource "aws_s3_bucket_policy" "s3_bucket_policy" {
@@ -132,7 +139,7 @@ resource "aws_s3_bucket_policy" "s3_bucket_policy" {
                 "AWS": "arn:aws:iam::cloudfront:user/CloudFront Origin Access Identity ${aws_cloudfront_origin_access_identity.cloudfront_origin_access_identity.id}"
             },
             "Action": "s3:GetObject",
-            "Resource": "arn:aws:s3:::s3-bucket-${var.name}/*.html"
+            "Resource": "arn:aws:s3:::s3-bucket-${var.name}/*"
         }
     ]
 }
