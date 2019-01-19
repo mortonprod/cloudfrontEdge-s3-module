@@ -196,12 +196,12 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
 
     lambda_function_association {
       event_type = "origin-request"
-      lambda_arn = "${aws_lambda_function.lambda_function_originRequest.arn}:1"
+      lambda_arn = "${aws_lambda_function.lambda_function_originRequest.qualified_arn}"
     }
 
     lambda_function_association {
       event_type = "origin-response"
-      lambda_arn = "${aws_lambda_function.lambda_function_originResponse.arn}:1"
+      lambda_arn = "${aws_lambda_function.lambda_function_originResponse.qualified_arn}"
     }
 
     min_ttl = "0"

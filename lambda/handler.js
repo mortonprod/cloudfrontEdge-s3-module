@@ -81,10 +81,10 @@ exports.originResponse = (event, context, callback) => {
         key: "x-xss-protection",
         value: "1; mode=block",
     }];
-    headers["content-security-policy"] = [{
-        key: "content-security-policy",
-        value: "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.googleapis.com fonts.gstatic.com",
-    }];
+    // headers["content-security-policy"] = [{
+    //     key: "content-security-policy",
+    //     value: "default-src 'self'; script-src 'self' 'unsafe-eval'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; font-src 'self' fonts.googleapis.com fonts.gstatic.com",
+    // }];
     headers["Referrer-Policy"] = [{
         key: "Referrer-Policy",
         value: "same-origin",
