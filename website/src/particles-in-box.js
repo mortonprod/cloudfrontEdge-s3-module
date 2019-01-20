@@ -1,3 +1,5 @@
+const THREE = require('three');
+const OrbitControls = require('three-orbit-controls')(THREE)
 const variables = require('./variables');
 process.env.CAMERA = {
   FOV: 75,
@@ -16,30 +18,31 @@ var renderer = new THREE.WebGLRenderer();
 renderer.setSize( process.env.RENDERER.X, process.env.RENDERER.Y);
 document.body.appendChild( renderer.domElement );
 
-var spheres = createSpheres(variables.spheres);
-var material = new THREE.MeshBasicMaterial( { color: 'red' } );
-var cube = new THREE.Mesh( spheres[0], material );
-var light = new THREE.PointLight( 'green', 1, 100 );
-light.position.set( 10, 10, 10 );
-scene.add( light );
-scene.add( cube );
+const spheres = createSpheres(variables.spheres, scene);
+// var material = new THREE.MeshBasicMaterial( { color: 'red' } );
+// var cube = new THREE.Mesh( spheres[0], material );
+// scene.add( createSpheres(variables.spheres) );
 
 camera.position.z = 5;
+
+controls = new OrbitControls( camera );
+controls.target.set( 0, 0, 0 )
 
 var animate = function () {
   requestAnimationFrame( animate );
 
-  cube.rotation.x += 0.01;
-  cube.rotation.y += 0.01;
+  spheres[0].rotation.x += 0.01;
+  spheres[0].rotation.y += 0.01;
 
   renderer.render( scene, camera );
 };
 
 animate();
 
-function createSpheres(spheres) {
+function createSpheres(spheres,scene) {
+  var material = new THREE.MeshBasicMaterial( { color: 'red' } );
   return spheres.map((sphere) => {
-    return new THREE.SphereGeometry(
+    const sphereGeo = new THREE.SphereGeometry(
       sphere.radius, 
       sphere.widthSegments, 
       sphere.heightSegments,
@@ -48,5 +51,8 @@ function createSpheres(spheres) {
       sphere.thetaStart,
       sphere.thetaLength
       );
+      const geoMat = new THREE.Mesh( sphereGeo, material)
+      scene.add(geoMat);
+      return geoMat;
   });
 }
