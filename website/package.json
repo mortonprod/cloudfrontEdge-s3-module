@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "lodash.get": "^4.4.2",
     "three-orbit-controls": "^82.1.0"
   },
   "devDependencies": {

@@ -9,25 +9,45 @@
       "phiLength": 360,
       "thetaStart": 0,
       "thetaLength": 360,
-      "color": "red"
+      "color": "red",
+      "position": {
+        "x": 0,
+        "y": 20,
+        "z": 0
+      }
     },
     "properties": [
       [
         0,
         {
-        "color": "red"
+        "color": "red",
+        "position": {
+          "x": 20,
+          "y": 0,
+          "z": 0
+        }
         }
       ],
       [
         1,
         {
-          "color": "green"
+          "color": "green",
+          "position": {
+            "x": 0,
+            "y": 20,
+            "z": 0
+          }
         }
       ],
       [
         2,
         {
-        "color": "blue"
+        "color": "blue",
+        "position": {
+          "x": 0,
+          "y": 0,
+          "z": 20
+        }
         }
       ]
     ],

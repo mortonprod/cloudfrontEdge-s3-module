@@ -1,9 +1,11 @@
 const THREE = require('three');
+const get = require('lodash.get');
 const OrbitControls = require('three-orbit-controls')(THREE)
 const variables = require('./variables');
+const properties = new Map(variables.spheres.properties);
 console.debug(variables);
 var renderer = new THREE.WebGLRenderer();
-container = document.getElementById( 'canvas' );
+container = document.getElementById('canvas');
 container.appendChild(renderer.domElement);
 console.debug(`NODE_ENV: ${process.env.NODE_ENV}`);
 const WIDTH = container.clientWidth;
@@ -13,9 +15,9 @@ console.debug(`WIDTH/HEIGHT: ${WIDTH}/${HEIGHT}`);
 /**
  * The size should be a square of size the same same length as the smallest size.
  */
-let diff = WIDTH < HEIGHT? WIDTH:HEIGHT;
+let diff = WIDTH < HEIGHT ? WIDTH : HEIGHT;
 window.onresize = (event) => {
-  diff = WIDTH < HEIGHT? WIDTH:HEIGHT;
+  diff = WIDTH < HEIGHT ? WIDTH : HEIGHT;
   console.debug(`--RESIZE-- diff: ${diff}`);
 };
 console.debug(`DIFF: ${diff}`);
@@ -30,13 +32,13 @@ process.env.RENDERER = {
   Y: HEIGHT
 };
 var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(process.env.CAMERA.FOV, WIDTH/HEIGHT, process.env.CAMERA.NEAR, process.env.CAMERA.FAR);
-renderer.setSize( process.env.RENDERER.X, process.env.RENDERER.Y);
+var camera = new THREE.PerspectiveCamera(process.env.CAMERA.FOV, WIDTH / HEIGHT, process.env.CAMERA.NEAR, process.env.CAMERA.FAR);
+renderer.setSize(process.env.RENDERER.X, process.env.RENDERER.Y);
 camera.position.z = -50;
-controls = new OrbitControls( camera );
-controls.target.set( 0, 0, 0 )
+controls = new OrbitControls(camera);
+controls.target.set(0, 0, 0)
 
-const spheres = createSpheres(variables.spheres);
+const indexToSphereMeshs = createSpheres();
 // var box = new THREE.BoxGeometry( variables.box.width, variables.box.height, variables.box.depth, variables.box.widthSegments, variables.box.heightSegment, variables.box.depthSegment  );
 // var material = new THREE.MeshBasicMaterial( {color: variables.box.color} );
 // var cube = new THREE.Mesh( box, material );
@@ -44,47 +46,58 @@ const spheres = createSpheres(variables.spheres);
 // scene.add( cube );
 
 var animate = function () {
-  requestAnimationFrame( animate );
-
+  requestAnimationFrame(animate);
+  particleSimulation(indexToSphereMeshs);
   // spheres[0].rotation.x += 0.01;
   // spheres[0].rotation.y += 0.01;
 
-  renderer.render( scene, camera );
+  renderer.render(scene, camera);
 };
 
 animate();
 
-function createSpheres(info) {
-  const properties = new Map(info.properties);
-  const sphereMeshs = [];
-  for(let i=0; i<info.number; i++) {
-    const color = properties.has(i) && properties.get(i).color ? properties.get(i).color : info.initial.color
-    const material = new THREE.MeshBasicMaterial( { color: color } );
+function createSpheres() {
+  const sphereMeshs = new Map();
+  for (let i = 0; i < variables.spheres.number; i++) {
+    const color = getSafe(i, 'color');
+    // const color = properties.has(i) && properties.get(i).color ? properties.get(i).color : info.initial.color
+    const material = new THREE.MeshBasicMaterial({
+      color: color
+    });
     const sphereGeometry = new THREE.SphereGeometry(
-      info.initial.radius, 
-      info.initial.widthSegments, 
-      info.initial.heightSegments,
-      info.initial.phiStart,
-      info.initial.phiLength,
-      info.initial.thetaStart,
-      info.initial.thetaLength
+      variables.spheres.initial.radius,
+      variables.spheres.initial.widthSegments,
+      variables.spheres.initial.heightSegments,
+      variables.spheres.initial.phiStart,
+      variables.spheres.initial.phiLength,
+      variables.spheres.initial.thetaStart,
+      variables.spheres.initial.thetaLength
     );
-    const sphereMesh = new THREE.Mesh( sphereGeometry, material)
+    const sphereMesh = new THREE.Mesh(sphereGeometry, material)
     // sphereMesh.position.set(getRandom(),getRandom(),getRandom());
     console.debug(sphereMesh.getWorldPosition());
     scene.add(sphereMesh);
-    sphereMeshs.push(sphereMesh);
+    sphereMeshs.set(i, sphereMesh);
   }
-  sphereMeshs[0].position.set(20,0,0);
-  sphereMeshs[1].position.set(0,20,0);
-  sphereMeshs[2].position.set(0,0,20);
+  sphereMeshs.get(0).position.set(20, 0, 0);
+  sphereMeshs.get(1).position.set(0, 20, 0);
+  sphereMeshs.get(2).position.set(0, 0, 20);
   return sphereMeshs;
 }
 
-function particleSimulation() {
+function particleSimulation(indexToSphereMeshs) {
+  for (let sphere of indexToSphereMeshs.entries()) {
 
+  }
 }
 
 function getRandom() {
-  return Math.random() * diff/2;
+  return Math.random() * diff / 2;
+}
+function getSafe(i,prop) {
+  let variable = get(properties.get(i), prop, variables.spheres.initial[prop]);
+  if (!variable) {
+    throw Error('Missing Info');
+  }
+  return variable;
 }
