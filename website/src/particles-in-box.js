@@ -18,10 +18,11 @@ var renderer = new THREE.WebGLRenderer();
 renderer.setSize( process.env.RENDERER.X, process.env.RENDERER.Y);
 document.body.appendChild( renderer.domElement );
 
-// const spheres = createSpheres(variables.spheres, scene);
+const spheres = createSpheres(variables.spheres, scene);
 var box = new THREE.BoxGeometry( variables.box.width, variables.box.height, variables.box.depth, variables.box.widthSegments, variables.box.heightSegment, variables.box.depthSegment  );
 var material = new THREE.MeshBasicMaterial( {color: variables.box.color} );
 var cube = new THREE.Mesh( box, material );
+cube.position.set(0,10,0);
 scene.add( cube );
 
 
