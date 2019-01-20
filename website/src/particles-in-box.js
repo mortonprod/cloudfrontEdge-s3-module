@@ -1,6 +1,7 @@
 const THREE = require('three');
 const OrbitControls = require('three-orbit-controls')(THREE)
 const variables = require('./variables');
+console.debug(variables);
 var renderer = new THREE.WebGLRenderer();
 container = document.getElementById( 'canvas' );
 container.appendChild(renderer.domElement);
@@ -54,7 +55,8 @@ var animate = function () {
 animate();
 
 function createSpheres(info) {
-  var material = new THREE.MeshBasicMaterial( { color: 'red' } );
+  const sphereMeshs = [];
+  const material = new THREE.MeshBasicMaterial( { color: 'red' } );
   for(let i=0; i<info.number; i++) {
     const sphereGeometry = new THREE.SphereGeometry(
       info.initial.radius, 
@@ -67,9 +69,11 @@ function createSpheres(info) {
     );
     const sphereMesh = new THREE.Mesh( sphereGeometry, material)
     sphereMesh.position.set(getRandom(),getRandom(),getRandom());
+    console.debug(sphereMesh.getWorldPosition());
     scene.add(sphereMesh);
-    return sphereMesh;
+    sphereMeshs.push(sphereMesh);
   }
+  return sphereMeshs;
 }
 
 function particleSimulation() {

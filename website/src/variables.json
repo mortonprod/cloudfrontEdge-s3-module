@@ -6,11 +6,11 @@
       "widthSegments": 30,
       "heightSegments": 30,
       "phiStart": 0,
-      "phiLength": 180,
+      "phiLength": 360,
       "thetaStart": 0,
-      "thetaLength": 180
+      "thetaLength": 360
     },
-    "number": 1
+    "number": 2
   },
   "box": {
     "width": 10,
