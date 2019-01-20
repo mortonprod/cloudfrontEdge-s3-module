@@ -5,8 +5,8 @@ var renderer = new THREE.WebGLRenderer();
 container = document.getElementById( 'canvas' );
 container.appendChild(renderer.domElement);
 console.debug(`NODE_ENV: ${process.env.NODE_ENV}`);
-const WIDTH = container.offsetWidth;
-const HEIGHT = container.offsetHeight;
+const WIDTH = container.clientWidth;
+const HEIGHT = container.clientHeight;
 console.debug(`WIDTH/HEIGHT: ${WIDTH}/${HEIGHT}`);
 
 /**
