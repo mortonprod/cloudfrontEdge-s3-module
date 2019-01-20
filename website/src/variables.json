@@ -1,7 +1,7 @@
 {
   "spheres": [
     {
-      "radius": 2,
+      "radius": 1,
       "widthSegments": 30,
       "heightSegments": 30,
       "phiStart": 0,
@@ -9,5 +9,14 @@
       "thetaStart": 0,
       "thetaLength": 180
     }
-  ]
+  ],
+  "box": {
+    "width": 10,
+    "height": 10,
+    "depth": 10,
+    "widthSegments": 10,
+    "heightSegments": 10,
+    "depthSegments": 10,
+    "color": "green"
+  }
 }

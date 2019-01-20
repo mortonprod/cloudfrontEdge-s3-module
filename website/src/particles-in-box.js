@@ -18,10 +18,12 @@ var renderer = new THREE.WebGLRenderer();
 renderer.setSize( process.env.RENDERER.X, process.env.RENDERER.Y);
 document.body.appendChild( renderer.domElement );
 
-const spheres = createSpheres(variables.spheres, scene);
-// var material = new THREE.MeshBasicMaterial( { color: 'red' } );
-// var cube = new THREE.Mesh( spheres[0], material );
-// scene.add( createSpheres(variables.spheres) );
+// const spheres = createSpheres(variables.spheres, scene);
+var box = new THREE.BoxGeometry( variables.box.width, variables.box.height, variables.box.depth, variables.box.widthSegments, variables.box.heightSegment, variables.box.depthSegment  );
+var material = new THREE.MeshBasicMaterial( {color: variables.box.color} );
+var cube = new THREE.Mesh( box, material );
+scene.add( cube );
+
 
 camera.position.z = 5;
 
@@ -31,8 +33,8 @@ controls.target.set( 0, 0, 0 )
 var animate = function () {
   requestAnimationFrame( animate );
 
-  spheres[0].rotation.x += 0.01;
-  spheres[0].rotation.y += 0.01;
+  // spheres[0].rotation.x += 0.01;
+  // spheres[0].rotation.y += 0.01;
 
   renderer.render( scene, camera );
 };
