@@ -1,0 +1,13 @@
+{
+  "spheres": [
+    {
+      "radius": 2,
+      "widthSegments": 30,
+      "heightSegments": 30,
+      "phiStart": 0,
+      "phiLength": 360,
+      "thetaStart": 0,
+      "thetaLength": 360
+    }
+  ]
+}
