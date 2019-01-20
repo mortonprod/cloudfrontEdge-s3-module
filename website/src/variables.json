@@ -5,9 +5,9 @@
       "widthSegments": 30,
       "heightSegments": 30,
       "phiStart": 0,
-      "phiLength": 360,
+      "phiLength": 180,
       "thetaStart": 0,
-      "thetaLength": 360
+      "thetaLength": 180
     }
   ]
 }

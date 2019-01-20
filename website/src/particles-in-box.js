@@ -16,9 +16,9 @@ var renderer = new THREE.WebGLRenderer();
 renderer.setSize( process.env.RENDERER.X, process.env.RENDERER.Y);
 document.body.appendChild( renderer.domElement );
 
-var geometry = new THREE.SphereGeometry(variables.spheres[0].radius, variables.spheres[0].widthSegments, variables.spheres[0].heightSegments );
+var spheres = createSpheres(variables.spheres);
 var material = new THREE.MeshBasicMaterial( { color: 'red' } );
-var cube = new THREE.Mesh( geometry, material );
+var cube = new THREE.Mesh( spheres[0], material );
 var light = new THREE.PointLight( 'green', 1, 100 );
 light.position.set( 10, 10, 10 );
 scene.add( light );
@@ -36,3 +36,17 @@ var animate = function () {
 };
 
 animate();
+
+function createSpheres(spheres) {
+  return spheres.map((sphere) => {
+    return new THREE.SphereGeometry(
+      sphere.radius, 
+      sphere.widthSegments, 
+      sphere.heightSegments,
+      sphere.phiStart,
+      sphere.phiLength,
+      sphere.thetaStart,
+      sphere.thetaLength
+      );
+  });
+}
