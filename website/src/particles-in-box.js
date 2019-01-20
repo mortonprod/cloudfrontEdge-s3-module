@@ -78,10 +78,10 @@ function createSpheres() {
     console.debug(sphereMesh.getWorldPosition());
     scene.add(sphereMesh);
     sphereMeshs.set(i, sphereMesh);
+    sphereMeshs.get(i).position.set(getSafe(i, 'position.x'), getSafe(i, 'position.y'), getSafe(i, 'position.z'));
   }
-  sphereMeshs.get(0).position.set(20, 0, 0);
-  sphereMeshs.get(1).position.set(0, 20, 0);
-  sphereMeshs.get(2).position.set(0, 0, 20);
+  // sphereMeshs.get(1).position.set(0, 20, 0);
+  // sphereMeshs.get(2).position.set(0, 0, 20);
   return sphereMeshs;
 }
 
@@ -95,9 +95,16 @@ function getRandom() {
   return Math.random() * diff / 2;
 }
 function getSafe(i,prop) {
-  let variable = get(properties.get(i), prop, variables.spheres.initial[prop]);
-  if (!variable) {
-    throw Error('Missing Info');
+  if(properties.has(i)) {
+    const property = properties.get(i);
+    let variable = get(property, prop);
+    return variable;
+  } else {
+    console.debug('No properties found so use defaults');
+    let variable = get(variables.spheres.initial, prop);
+    if (!variable) {
+      throw Error('Missing Info');
+    }
+    return variable;
   }
-  return variable;
 }
