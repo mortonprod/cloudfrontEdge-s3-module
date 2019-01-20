@@ -17,6 +17,11 @@
     "widthSegments": 10,
     "heightSegments": 10,
     "depthSegments": 10,
-    "color": "green"
+    "color": "green",
+    "position": {
+      "x": 0,
+      "y": 0,
+      "z": 0
+    }
   }
 }

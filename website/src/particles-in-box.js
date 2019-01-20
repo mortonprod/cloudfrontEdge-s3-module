@@ -22,11 +22,11 @@ const spheres = createSpheres(variables.spheres, scene);
 var box = new THREE.BoxGeometry( variables.box.width, variables.box.height, variables.box.depth, variables.box.widthSegments, variables.box.heightSegment, variables.box.depthSegment  );
 var material = new THREE.MeshBasicMaterial( {color: variables.box.color} );
 var cube = new THREE.Mesh( box, material );
-cube.position.set(0,10,0);
+cube.position.set(variables.box.position.x,variables.box.position.y,variables.box.position.z);
 scene.add( cube );
 
 
-camera.position.z = 5;
+camera.position.z = -50;
 
 controls = new OrbitControls( camera );
 controls.target.set( 0, 0, 0 )
@@ -54,8 +54,9 @@ function createSpheres(spheres,scene) {
       sphere.thetaStart,
       sphere.thetaLength
       );
-      const geoMat = new THREE.Mesh( sphereGeo, material)
-      scene.add(geoMat);
-      return geoMat;
+      const sphe = new THREE.Mesh( sphereGeo, material)
+      sphe.position.set(0,0,0);
+      scene.add(sphe);
+      return sphe;
   });
 }
