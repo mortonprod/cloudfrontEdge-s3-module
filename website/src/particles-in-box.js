@@ -38,26 +38,15 @@ camera.position.z = -50;
 controls = new OrbitControls(camera);
 controls.target.set(0, 0, 0)
 
-const indexToSphereMeshs = createSpheres();
 // var box = new THREE.BoxGeometry( variables.box.width, variables.box.height, variables.box.depth, variables.box.widthSegments, variables.box.heightSegment, variables.box.depthSegment  );
 // var material = new THREE.MeshBasicMaterial( {color: variables.box.color} );
 // var cube = new THREE.Mesh( box, material );
 // cube.position.set(variables.box.position.x,variables.box.position.y,variables.box.position.z);
 // scene.add( cube );
 
-var animate = function () {
-  requestAnimationFrame(animate);
-  particleSimulation(indexToSphereMeshs);
-  // spheres[0].rotation.x += 0.01;
-  // spheres[0].rotation.y += 0.01;
-
-  renderer.render(scene, camera);
-};
-
-animate();
-
+const indexToSphereMeshs = new Map();
+createSpheres();
 function createSpheres() {
-  const sphereMeshs = new Map();
   for (let i = 0; i < variables.spheres.number; i++) {
     const color = getSafe(i, 'color');
     // const color = properties.has(i) && properties.get(i).color ? properties.get(i).color : info.initial.color
@@ -77,17 +66,34 @@ function createSpheres() {
     // sphereMesh.position.set(getRandom(),getRandom(),getRandom());
     console.debug(sphereMesh.getWorldPosition());
     scene.add(sphereMesh);
-    sphereMeshs.set(i, sphereMesh);
-    sphereMeshs.get(i).position.set(getSafe(i, 'position.x'), getSafe(i, 'position.y'), getSafe(i, 'position.z'));
+    indexToSphereMeshs.set(i, sphereMesh);
+    indexToSphereMeshs.get(i).position.set(getSafe(i, 'position.x'), getSafe(i, 'position.y'), getSafe(i, 'position.z'));
   }
   // sphereMeshs.get(1).position.set(0, 20, 0);
   // sphereMeshs.get(2).position.set(0, 0, 20);
-  return sphereMeshs;
+  // return indexToSphereMeshs;
 }
 
-function particleSimulation(indexToSphereMeshs) {
-  for (let sphere of indexToSphereMeshs.entries()) {
+var animate = function () {
+  requestAnimationFrame(animate);
+  particleSimulation();
+  // spheres[0].rotation.x += 0.01;
+  // spheres[0].rotation.y += 0.01;
+  
+  renderer.render(scene, camera);
+};
 
+animate();
+
+function particleSimulation() {
+  for (let key of indexToSphereMeshs.keys()) {
+    const mesh = indexToSphereMeshs.get(key);
+    const position = mesh.position;
+    const x = position.x;
+    const y = position.y;
+    const z = position.z;
+    // console.debug(`POSITIONS: ${x},${y},${z}`);
+    // indexToSphereMeshs.get(key).position.set(getSafe(i, 'position.x'), getSafe(i, 'position.y'), getSafe(i, 'position.z'));
   }
 }
 
