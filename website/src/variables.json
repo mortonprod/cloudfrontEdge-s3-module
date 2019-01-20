@@ -1,15 +1,17 @@
 {
-  "spheres": [
+  "spheres": {
+    "initial":
     {
-      "radius": 1,
+      "radius": 10,
       "widthSegments": 30,
       "heightSegments": 30,
       "phiStart": 0,
       "phiLength": 180,
       "thetaStart": 0,
       "thetaLength": 180
-    }
-  ],
+    },
+    "number": 1
+  },
   "box": {
     "width": 10,
     "height": 10,

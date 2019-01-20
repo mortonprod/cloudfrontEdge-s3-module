@@ -23,7 +23,7 @@ module.exports = {
     rules: [{
       test: /\.scss$/,
       use: [
-        "style-loader", // creates style nodes from JS strings
+        "style-loader", // creates styl e nodes from JS strings
         "css-loader", // translates CSS into CommonJS
         "sass-loader" // compiles Sass to CSS, using Node Sass by default
       ]
