@@ -89,9 +89,10 @@ function particleSimulation() {
   for (let key of indexToSphereMeshs.keys()) {
     const mesh = indexToSphereMeshs.get(key);
     const position = mesh.position;
-    const x = position.x;
-    const y = position.y;
-    const z = position.z;
+    // const x = position.x + getSafe(key, 'velocity.x');
+    // const y = position.y + getSafe(key, 'velocity.y');
+    // const z = position.z + getSafe(key, 'velocity.z');
+    // indexToSphereMeshs.get(key).position.set(x, y, z);
     // console.debug(`POSITIONS: ${x},${y},${z}`);
     // indexToSphereMeshs.get(key).position.set(getSafe(i, 'position.x'), getSafe(i, 'position.y'), getSafe(i, 'position.z'));
   }
@@ -101,16 +102,9 @@ function getRandom() {
   return Math.random() * diff / 2;
 }
 function getSafe(i,prop) {
-  if(properties.has(i)) {
-    const property = properties.get(i);
-    let variable = get(property, prop);
-    return variable;
-  } else {
-    console.debug('No properties found so use defaults');
-    let variable = get(variables.spheres.initial, prop);
-    if (!variable) {
-      throw Error('Missing Info');
-    }
-    return variable;
+  const temp =  properties.has(i) && get(properties.get(i), prop) ? get(properties.get(i), prop) : get(variables.spheres.initial, prop);
+  if (typeof temp === 'undefined') {
+    throw Error('Missing Info');
   }
+  return temp;
 }
