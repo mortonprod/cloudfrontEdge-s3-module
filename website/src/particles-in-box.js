@@ -89,10 +89,10 @@ function particleSimulation() {
   for (let key of indexToSphereMeshs.keys()) {
     const mesh = indexToSphereMeshs.get(key);
     const position = mesh.position;
-    // const x = position.x + getSafe(key, 'velocity.x');
-    // const y = position.y + getSafe(key, 'velocity.y');
-    // const z = position.z + getSafe(key, 'velocity.z');
-    // indexToSphereMeshs.get(key).position.set(x, y, z);
+    const x = position.x + getSafe(key, 'velocity.x');
+    const y = position.y + getSafe(key, 'velocity.y');
+    const z = position.z + getSafe(key, 'velocity.z');
+    indexToSphereMeshs.get(key).position.set(x, y, z);
     // console.debug(`POSITIONS: ${x},${y},${z}`);
     // indexToSphereMeshs.get(key).position.set(getSafe(i, 'position.x'), getSafe(i, 'position.y'), getSafe(i, 'position.z'));
   }
