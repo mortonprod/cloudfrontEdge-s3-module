@@ -55,9 +55,11 @@ var animate = function () {
 animate();
 
 function createSpheres(info) {
+  const properties = new Map(info.properties);
   const sphereMeshs = [];
-  const material = new THREE.MeshBasicMaterial( { color: 'red' } );
   for(let i=0; i<info.number; i++) {
+    const color = properties.has(i) && properties.get(i).color ? properties.get(i).color : info.initial.color
+    const material = new THREE.MeshBasicMaterial( { color: color } );
     const sphereGeometry = new THREE.SphereGeometry(
       info.initial.radius, 
       info.initial.widthSegments, 
@@ -68,11 +70,14 @@ function createSpheres(info) {
       info.initial.thetaLength
     );
     const sphereMesh = new THREE.Mesh( sphereGeometry, material)
-    sphereMesh.position.set(getRandom(),getRandom(),getRandom());
+    // sphereMesh.position.set(getRandom(),getRandom(),getRandom());
     console.debug(sphereMesh.getWorldPosition());
     scene.add(sphereMesh);
     sphereMeshs.push(sphereMesh);
   }
+  sphereMeshs[0].position.set(20,0,0);
+  sphereMeshs[1].position.set(0,20,0);
+  sphereMeshs[2].position.set(0,0,20);
   return sphereMeshs;
 }
 

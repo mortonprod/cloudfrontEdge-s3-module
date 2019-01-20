@@ -2,15 +2,36 @@
   "spheres": {
     "initial":
     {
-      "radius": 10,
+      "radius": 2,
       "widthSegments": 30,
       "heightSegments": 30,
       "phiStart": 0,
       "phiLength": 360,
       "thetaStart": 0,
-      "thetaLength": 360
+      "thetaLength": 360,
+      "color": "red"
     },
-    "number": 2
+    "properties": [
+      [
+        0,
+        {
+        "color": "red"
+        }
+      ],
+      [
+        1,
+        {
+          "color": "green"
+        }
+      ],
+      [
+        2,
+        {
+        "color": "blue"
+        }
+      ]
+    ],
+    "number": 3
   },
   "box": {
     "width": 10,
