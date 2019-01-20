@@ -88,18 +88,24 @@ animate();
 function particleSimulation() {
   for (let key of indexToSphereMeshs.keys()) {
     const mesh = indexToSphereMeshs.get(key);
+    updateRandomPosition(mesh);
     const position = mesh.position;
-    const x = position.x + getSafe(key, 'velocity.x');
-    const y = position.y + getSafe(key, 'velocity.y');
-    const z = position.z + getSafe(key, 'velocity.z');
-    indexToSphereMeshs.get(key).position.set(x, y, z);
+    // updateWall();
+    // const x = position.x + getSafe(key, 'velocity.x');
+    // const y = position.y + getSafe(key, 'velocity.y');
+    // const z = position.z + getSafe(key, 'velocity.z');
+    // indexToSphereMeshs.get(key).position.set(x, y, z);
     // console.debug(`POSITIONS: ${x},${y},${z}`);
     // indexToSphereMeshs.get(key).position.set(getSafe(i, 'position.x'), getSafe(i, 'position.y'), getSafe(i, 'position.z'));
   }
 }
 
+function updateRandomPosition(mesh) {
+  mesh.position.set(getRandom(), getRandom(), getRandom());
+}
+
 function getRandom() {
-  return Math.random() * diff / 2;
+  return Math.random() * diff;
 }
 function getSafe(i,prop) {
   const temp =  properties.has(i) && get(properties.get(i), prop) ? get(properties.get(i), prop) : get(variables.spheres.initial, prop);
