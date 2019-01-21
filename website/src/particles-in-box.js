@@ -2,6 +2,28 @@ const THREE = require('three');
 const get = require('lodash.get');
 const OrbitControls = require('three-orbit-controls')(THREE)
 const variables = require('./variables');
+
+
+const visibleHeightAtZDepth = ( depth, camera ) => {
+  // compensate for cameras not positioned at z=0
+  const cameraOffset = camera.position.z;
+  if ( depth < cameraOffset ) depth -= cameraOffset;
+  else depth += cameraOffset;
+
+  // vertical fov in radians
+  const vFOV = camera.fov * Math.PI / 180; 
+
+  // Math.abs to ensure the result is always positive
+  return 2 * Math.tan( vFOV / 2 ) * Math.abs( depth );
+};
+
+const visibleWidthAtZDepth = ( depth, camera ) => {
+  const height = visibleHeightAtZDepth( depth, camera );
+  return height * camera.aspect;
+};
+
+
+
 const properties = new Map(variables.spheres.properties);
 console.debug(variables);
 var renderer = new THREE.WebGLRenderer();
@@ -21,20 +43,14 @@ window.onresize = (event) => {
   console.debug(`--RESIZE-- diff: ${diff}`);
 };
 console.debug(`DIFF: ${diff}`);
-
-process.env.CAMERA = {
-  FOV: 75,
-  NEAR: 0.1,
-  FAR: 1000
-};
-process.env.RENDERER = {
-  X: WIDTH,
-  Y: HEIGHT
-};
 var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(process.env.CAMERA.FOV, WIDTH / HEIGHT, process.env.CAMERA.NEAR, process.env.CAMERA.FAR);
-renderer.setSize(process.env.RENDERER.X, process.env.RENDERER.Y);
-camera.position.z = -50;
+var camera = new THREE.PerspectiveCamera(variables.camera.fov, WIDTH / HEIGHT, variables.camera.near, variables.camera.far);
+const depth = variables.camera.initial.position.z;
+const boxWidth = visibleWidthAtZDepth(depth, camera);
+const boxHeight = visibleHeightAtZDepth(depth, camera);
+console.debug(`Width/Height: ${boxWidth}/${boxHeight} at visible at depth ${depth}`);
+renderer.setSize(WIDTH, HEIGHT);
+camera.position.z = variables.camera.initial.position.z;
 controls = new OrbitControls(camera);
 controls.target.set(0, 0, 0)
 
@@ -105,7 +121,7 @@ function updateRandomPosition(mesh) {
 }
 
 function getRandom() {
-  return Math.random() * diff;
+  return -(Math.random() - 0.5) * boxWidth;
 }
 function getSafe(i,prop) {
   const temp =  properties.has(i) && get(properties.get(i), prop) ? get(properties.get(i), prop) : get(variables.spheres.initial, prop);

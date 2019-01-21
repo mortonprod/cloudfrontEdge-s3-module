@@ -1,7 +1,19 @@
 {
+  "camera": {
+    "initial": {
+      "position": {
+        "x": 0,
+        "y": 0,
+        "z": 50
+      },
+      "fov": 75,
+      "near": 0.1,
+      "far": 1000
+    }
+  },
   "spheres": {
     "initial": {
-      "radius": 2,
+      "radius": 5,
       "widthSegments": 30,
       "heightSegments": 30,
       "phiStart": 0,
@@ -60,7 +72,7 @@
         }
       ]
     ],
-    "number": 3
+    "number": 10
   },
   "box": {
     "width": 10,
