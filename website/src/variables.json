@@ -16,7 +16,7 @@
     "maxSpeed": 0.5,
     "number": 100,
     "initial": {
-      "radius": 2,
+      "radius": 1,
       "widthSegments": 30,
       "heightSegments": 30,
       "phiStart": 0,

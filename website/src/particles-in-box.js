@@ -78,7 +78,7 @@ function createSpheres() {
 
 
     // sphereMesh.position.set(getRandom(),getRandom(),getRandom());
-    console.debug(sphereMesh.getWorldPosition());
+    // console.debug(sphereMesh.getWorldPosition());
     scene.add(sphereMesh);
     indexToSphereMeshs.set(i, sphereMesh);
     // indexToSphereMeshs.get(i).position.set(getSafe(i, 'position.x'), getSafe(i, 'position.y'), getSafe(i, 'position.z'));
