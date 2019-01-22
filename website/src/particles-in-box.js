@@ -1,5 +1,6 @@
 const THREE = require('three');
 const get = require('lodash.get');
+const set = require('lodash.set');
 const OrbitControls = require('three-orbit-controls')(THREE)
 const variables = require('./variables');
 
@@ -25,6 +26,7 @@ const visibleWidthAtZDepth = ( depth, camera ) => {
 
 
 const properties = new Map(variables.spheres.properties);
+setInitialRandomVelocity() 
 console.debug(variables);
 var renderer = new THREE.WebGLRenderer();
 container = document.getElementById('canvas');
@@ -104,20 +106,49 @@ animate();
 function particleSimulation() {
   for (let key of indexToSphereMeshs.keys()) {
     const mesh = indexToSphereMeshs.get(key);
-    updateRandomPosition(mesh);
-    const position = mesh.position;
-    // updateWall();
-    // const x = position.x + getSafe(key, 'velocity.x');
-    // const y = position.y + getSafe(key, 'velocity.y');
-    // const z = position.z + getSafe(key, 'velocity.z');
-    // indexToSphereMeshs.get(key).position.set(x, y, z);
-    // console.debug(`POSITIONS: ${x},${y},${z}`);
-    // indexToSphereMeshs.get(key).position.set(getSafe(i, 'position.x'), getSafe(i, 'position.y'), getSafe(i, 'position.z'));
+    updateWall(key,mesh);
+    updateVelocity(key,mesh);
   }
 }
 
-function updateRandomPosition(mesh) {
-  mesh.position.set(getRandom(), getRandom(), getRandom());
+function setRandomPosition(mesh) {
+  mesh.position.set(getRandom()/2, getRandom()/2, getRandom()/2);
+}
+
+function setInitialRandomVelocity() {
+  for(let key of properties.keys()){
+    const property = properties.get(key);
+    set(property, 'velocity.x', -(Math.random() - 0.5) * variables.spheres.maxSpeed);
+    set(property, 'velocity.y', -(Math.random() - 0.5) * variables.spheres.maxSpeed);
+    set(property, 'velocity.z', -(Math.random() - 0.5) * variables.spheres.maxSpeed);
+    properties.set(key, property);
+
+  }
+}
+
+function updateVelocity(key,mesh) {
+    const x = mesh.position.x + getSafe(key, 'velocity.x');
+    const y = mesh.position.y + getSafe(key, 'velocity.y');
+    const z = mesh.position.z + getSafe(key, 'velocity.z');
+    mesh.position.set(x, y, z);
+}
+
+function updateWall(key,mesh) {
+  let vx = getSafe(key, 'velocity.x');
+  let vy = getSafe(key, 'velocity.y');
+  let vz = getSafe(key, 'velocity.z');
+  if (Math.abs(mesh.position.x) >= 0.5*boxWidth) {
+    vx = -1*vx
+    setSafe(key,'velocity.x',vx);
+  }
+  if (Math.abs(mesh.position.y) >= 0.5*boxWidth) {
+    vy = -1*vy
+    setSafe(key,'velocity.y',vy);
+  }
+  if (Math.abs(mesh.position.z) >= 0.5*boxWidth) {
+    vz = -1*vz
+    setSafe(key,'velocity.z',vz);
+  }
 }
 
 function getRandom() {
@@ -129,4 +160,8 @@ function getSafe(i,prop) {
     throw Error('Missing Info');
   }
   return temp;
+}
+
+function setSafe(key, prop, value) {
+  set(properties.get(key), prop, value);
 }
