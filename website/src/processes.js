@@ -30,6 +30,8 @@ function ParticlesInBox(variables) {
   const worker = new Worker();
   // Create canvas element and attach to dom
   var renderer = new THREE.WebGLRenderer();
+  renderer.gammaInput = true;
+  renderer.gammaOutput = true;
   const container = document.getElementById(ID);
   container.appendChild(renderer.domElement);
   const WIDTH = container.clientWidth;
@@ -42,8 +44,17 @@ function ParticlesInBox(variables) {
   variables.box.boxHeight = boxHeight;
   console.debug(`WIDTH/HEIGHT: ${WIDTH}/${HEIGHT}`);
   var scene = new THREE.Scene();
-  const light = new THREE.PointLight( variables.light.color, variables.light.intensity);
-  light.position.set( variables.light.position.x, variables.light.position.y, variables.light.position.z );
+  let light
+  switch(variables.light.type) {
+    case 'point':
+      light = new THREE.PointLight( variables.light.color, variables.light.intensity);
+      light.position.set(variables.light.position.x, variables.light.position.y, variables.light.position.z);
+      break;
+      case 'directional':
+      light = new THREE.DirectionalLight(variables.light.color, variables.light.intensity);
+      light.position.set( variables.light.position.x, variables.light.position.y, variables.light.position.z );
+      break;
+  }
   scene.add( light );
   console.debug(`Width/Height: ${boxWidth}/${boxHeight} at visible at depth ${depth}`);
   renderer.setSize(WIDTH, HEIGHT);
@@ -83,9 +94,9 @@ function ParticlesInBox(variables) {
       // const material = new THREE.MeshBasicMaterial({
       //   color: color
       // });
-      // const material = new THREE.MeshStandardMaterial({metalness: 1, roughness: 0.5});
+      const material = new THREE.MeshStandardMaterial({color: "#000", metalness: 0.5, roughness: 0.5});
       // const material = new THREE.MeshNormalMaterial();
-      const material = new THREE.MeshPhongMaterial();
+      // const material = new THREE.MeshPhongMaterial();
       const sphereGeometry = new THREE.SphereGeometry(
         variables.spheres.initial.radius,
         variables.spheres.initial.widthSegments,

@@ -1,11 +1,12 @@
 {
   "light": {
-    "color": "0xff0000",
+    "type": "point",
+    "color": "white",
     "intensity": 1,
     "position": {
       "x": 0,
       "y": 0,
-      "z": 5
+      "z": 1
     }
   },
   "camera": {
