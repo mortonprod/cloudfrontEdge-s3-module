@@ -1,30 +1,11 @@
 const THREE = require('three');
+const utils = require('./utils');
 const get = require('lodash.get');
 const set = require('lodash.set');
 const OrbitControls = require('three-orbit-controls')(THREE)
 const variables = require('./variables');
 
-
-const visibleHeightAtZDepth = ( depth, camera ) => {
-  // compensate for cameras not positioned at z=0
-  const cameraOffset = camera.position.z;
-  if ( depth < cameraOffset ) depth -= cameraOffset;
-  else depth += cameraOffset;
-
-  // vertical fov in radians
-  const vFOV = camera.fov * Math.PI / 180; 
-
-  // Math.abs to ensure the result is always positive
-  return 2 * Math.tan( vFOV / 2 ) * Math.abs( depth );
-};
-
-const visibleWidthAtZDepth = ( depth, camera ) => {
-  const height = visibleHeightAtZDepth( depth, camera );
-  return height * camera.aspect;
-};
-
-
-
+// Create canvas scene
 var renderer = new THREE.WebGLRenderer();
 container = document.getElementById('canvas');
 container.appendChild(renderer.domElement);
@@ -32,20 +13,18 @@ console.debug(`NODE_ENV: ${process.env.NODE_ENV}`);
 const WIDTH = container.clientWidth;
 const HEIGHT = container.clientHeight;
 console.debug(`WIDTH/HEIGHT: ${WIDTH}/${HEIGHT}`);
-
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(variables.camera.fov, WIDTH / HEIGHT, variables.camera.near, variables.camera.far);
 const depth = variables.camera.initial.position.z;
-const boxWidth = visibleWidthAtZDepth(depth, camera);
-const boxHeight = visibleHeightAtZDepth(depth, camera);
+const boxWidth = utils.visibleWidthAtZDepth(depth, camera);
+const boxHeight = utils.visibleHeightAtZDepth(depth, camera);
 console.debug(`Width/Height: ${boxWidth}/${boxHeight} at visible at depth ${depth}`);
 renderer.setSize(WIDTH, HEIGHT);
 camera.position.z = depth;
 controls = new OrbitControls(camera);
 controls.target.set(0, 0, 0)
 
-const properties = new Map();
-setInitialRandom();
+const properties = utils.getProperties(variables, boxWidth, boxHeight);
 const indexToSphereMeshs = new Map();
 console.debug(`variables: ${JSON.stringify(variables)} properties: ${JSON.stringify([...properties])}`);
 createSpheres();
@@ -105,27 +84,6 @@ function particleSimulation() {
 // function setRandomPosition(mesh) {
 //   mesh.position.set(getRandom()/2, getRandom()/2, getRandom()/2);
 // }
-
-function setInitialRandom() {
-  // for(let key of properties.keys()){
-  for(let key=0; key < variables.spheres.number; key++){
-    if(!properties.has(key)) {
-      properties.set(key, {});
-    }
-    const property = properties.get(key);
-    set(property, 'velocity.x', getRandom() * variables.spheres.maxSpeed);
-    set(property, 'velocity.y', getRandom() * variables.spheres.maxSpeed);
-    set(property, 'velocity.z', getRandom() * variables.spheres.maxSpeed);
-    set(property, 'position.x',getRandom()*variables.box.widthFactor*boxWidth);
-    set(property, 'position.y',getRandom()*variables.box.heightFactor*boxHeight);
-    set(property, 'position.z',getRandom()*variables.box.depth);
-    properties.set(key, property);
-  }
-}
-
-function getRandom() {
-  return -(Math.random() - 0.5);
-}
 
 function updateVelocity(key,mesh) {
     const x = mesh.position.x + getSafe(key, 'velocity.x');
