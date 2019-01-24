@@ -29,17 +29,21 @@ const updateWall = (key, properties, boxWidth,boxHeight, widthFactor, heightFact
     set(properties.get(key), 'velocity.z', vz);
   }
 }
+let variables;
 self.addEventListener('message', function(e) {
-  const variables = e.data.variables;
-  const properties = variables.spheres.properties;
-  // console.debug(`Start calculation ${JSON.stringify([...properties])}`);
-  for (let key of properties.keys()) {
-    updateWall(key,properties, variables.box.boxWidth, variables.box.boxHeight, variables.box.widthFactor, variables.box.heightFactor, variables.box.depth);
-    updateVelocity(key,properties);
+  if(e.data.type === 'initial') {
+    variables = e.data.variables;
+  } else {
+    const properties = variables.spheres.properties;
+    // console.debug(`Start calculation ${JSON.stringify([...properties])}`);
+    for (let key of properties.keys()) {
+      updateWall(key,properties, variables.box.boxWidth, variables.box.boxHeight, variables.box.widthFactor, variables.box.heightFactor, variables.box.depth);
+      updateVelocity(key,properties);
+    }
+    variables.spheres.properties = properties;
+    // console.debug(`Send variables back ${JSON.stringify(variables.properties)}`);
+    self.postMessage({variables});
   }
-  variables.spheres.properties = properties;
-  // console.debug(`Send variables back ${JSON.stringify(variables.properties)}`);
-  self.postMessage({variables});
 });
 
 

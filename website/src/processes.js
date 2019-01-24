@@ -101,35 +101,26 @@ function ParticlesInBox(variables) {
   }
   setInitialProperties();
   setObjects();
+  worker.postMessage({ type: 'initial', variables});
   const update = () => {
-    // worker.postMessage({ properties: JSON.stringify([...properties]) }); // Post a message with the current variables
-    // console.debug(`Variables ${JSON.stringify(variables)}`);
-    worker.postMessage({ variables}); // Post a message with the current variables
-    worker.onmessage = function (event) {
-      variables = event.data.variables; // Must set new value for next loop
-      for(let key of variables.spheres.properties.keys()){ // Now set value in three js.
-        if(indexToObject.has(key)) {
-          const property = variables.spheres.properties.get(key);
-          const mesh = indexToObject.get(key);
-          // if(key === 0) {
-            console.debug(`${key} ${property.position.x} ${property.position.y} ${property.position.z}`)
-          // }
-          mesh.position.set(property.position.x, property.position.y, property.position.z);        
-          // mesh.position.set(2,2,2);        
+    return new Promise((resolve, reject) => {
+      worker.postMessage({}); // Post a message with the current variables
+      worker.onmessage = function (event) {
+        variables = event.data.variables; // Must set new value for next loop
+        for(let key of variables.spheres.properties.keys()){ // Now set value in three js.
+          if(indexToObject.has(key)) {
+            const property = variables.spheres.properties.get(key);
+            const mesh = indexToObject.get(key);
+            // if(key === 0) {
+              console.debug(`${key} ${property.position.x} ${property.position.y} ${property.position.z}`)
+            // }
+            mesh.position.set(property.position.x, property.position.y, property.position.z);        
+            // mesh.position.set(2,2,2);        
+          }
         }
-      }
-    };
-    // for(let key of variables.spheres.properties.keys()){
-    //   if(indexToObject.has(key)) {
-    //     const property = variables.spheres.properties.get(key);
-    //     const mesh = indexToObject.get(key);
-    //     // if(key === 0) {
-    //       console.debug(`${key} ${property.position.x} ${property.position.y} ${property.position.z}`)
-    //     // }
-    //     mesh.position.set(property.position.x, property.position.y, property.position.z);        
-    //     // mesh.position.set(2,2,2);        
-    //   }
-    // }
+      };
+      resolve();
+    })
   }
   return {
     update,
