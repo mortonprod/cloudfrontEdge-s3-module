@@ -28,7 +28,7 @@
   "box": {
     "widthFactor": 0.2,
     "heightFactor": 0.2,
-    "depth": 3,
+    "depth": 10,
     "widthSegments": 10,
     "heightSegments": 10,
     "depthSegments": 10,

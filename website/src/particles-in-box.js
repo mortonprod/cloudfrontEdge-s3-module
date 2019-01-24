@@ -25,9 +25,6 @@ const visibleWidthAtZDepth = ( depth, camera ) => {
 
 
 
-const properties = new Map();
-setInitialRandomVelocity() 
-console.debug(variables);
 var renderer = new THREE.WebGLRenderer();
 container = document.getElementById('canvas');
 container.appendChild(renderer.domElement);
@@ -47,14 +44,12 @@ camera.position.z = depth;
 controls = new OrbitControls(camera);
 controls.target.set(0, 0, 0)
 
-// var box = new THREE.BoxGeometry( variables.box.width, variables.box.height, variables.box.depth, variables.box.widthSegments, variables.box.heightSegment, variables.box.depthSegment  );
-// var material = new THREE.MeshBasicMaterial( {color: variables.box.color} );
-// var cube = new THREE.Mesh( box, material );
-// cube.position.set(variables.box.position.x,variables.box.position.y,variables.box.position.z);
-// scene.add( cube );
-
+const properties = new Map();
+setInitialRandom();
 const indexToSphereMeshs = new Map();
+console.debug(`variables: ${JSON.stringify(variables)} properties: ${JSON.stringify([...properties])}`);
 createSpheres();
+
 function createSpheres() {
   for (let i = 0; i < variables.spheres.number; i++) {
     const colors = variables.spheres.colors;
@@ -74,14 +69,14 @@ function createSpheres() {
       variables.spheres.initial.thetaLength
     );
     const sphereMesh = new THREE.Mesh(sphereGeometry, material)
-    setRandomPosition(sphereMesh);
+    // setRandomPosition(sphereMesh);
 
 
     // sphereMesh.position.set(getRandom(),getRandom(),getRandom());
     // console.debug(sphereMesh.getWorldPosition());
     scene.add(sphereMesh);
     indexToSphereMeshs.set(i, sphereMesh);
-    // indexToSphereMeshs.get(i).position.set(getSafe(i, 'position.x'), getSafe(i, 'position.y'), getSafe(i, 'position.z'));
+    indexToSphereMeshs.get(i).position.set(getSafe(i, 'position.x'), getSafe(i, 'position.y'), getSafe(i, 'position.z'));
   }
   // sphereMeshs.get(1).position.set(0, 20, 0);
   // sphereMeshs.get(2).position.set(0, 0, 20);
@@ -107,23 +102,29 @@ function particleSimulation() {
   }
 }
 
-function setRandomPosition(mesh) {
-  mesh.position.set(getRandom()/2, getRandom()/2, getRandom()/2);
-}
+// function setRandomPosition(mesh) {
+//   mesh.position.set(getRandom()/2, getRandom()/2, getRandom()/2);
+// }
 
-function setInitialRandomVelocity() {
+function setInitialRandom() {
   // for(let key of properties.keys()){
   for(let key=0; key < variables.spheres.number; key++){
     if(!properties.has(key)) {
       properties.set(key, {});
     }
     const property = properties.get(key);
-    set(property, 'velocity.x', -(Math.random() - 0.5) * variables.spheres.maxSpeed);
-    set(property, 'velocity.y', -(Math.random() - 0.5) * variables.spheres.maxSpeed);
-    set(property, 'velocity.z', -(Math.random() - 0.5) * variables.spheres.maxSpeed);
+    set(property, 'velocity.x', getRandom() * variables.spheres.maxSpeed);
+    set(property, 'velocity.y', getRandom() * variables.spheres.maxSpeed);
+    set(property, 'velocity.z', getRandom() * variables.spheres.maxSpeed);
+    set(property, 'position.x',getRandom()*variables.box.widthFactor*boxWidth);
+    set(property, 'position.y',getRandom()*variables.box.heightFactor*boxHeight);
+    set(property, 'position.z',getRandom()*variables.box.depth);
     properties.set(key, property);
-
   }
+}
+
+function getRandom() {
+  return -(Math.random() - 0.5);
 }
 
 function updateVelocity(key,mesh) {
@@ -149,10 +150,6 @@ function updateWall(key,mesh) {
     vz = -1*vz
     setSafe(key,'velocity.z',vz);
   }
-}
-
-function getRandom() {
-  return -(Math.random() - 0.5) * boxWidth;
 }
 function getSafe(key,prop) {
   return get(properties.get(key), prop, get(variables.spheres.initial, prop));
