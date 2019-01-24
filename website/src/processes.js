@@ -2,6 +2,9 @@ const THREE = require('three');
 const OrbitControls = require('three-orbit-controls')(THREE)
 const get = require('lodash.get');
 const set = require('lodash.set');
+const Worker = require('./physics.worker.js');
+// worker.addEventListener("message", function (event) {});
+// worker.terminate();
 
 const ID = 'canvas';
 
@@ -24,6 +27,7 @@ const visibleWidthAtZDepth = (depth, camera) => {
 };
 
 function ParticlesInBox(variables) {
+  const worker = new Worker();
   // Create canvas element and attach to dom
   var renderer = new THREE.WebGLRenderer();
   const container = document.getElementById(ID);
@@ -34,6 +38,8 @@ function ParticlesInBox(variables) {
   const depth = variables.camera.initial.position.z;
   const boxWidth = visibleWidthAtZDepth(depth, camera);
   const boxHeight = visibleHeightAtZDepth(depth, camera); 
+  variables.box.boxWidth = boxWidth;
+  variables.box.boxHeight = boxHeight;
   console.debug(`WIDTH/HEIGHT: ${WIDTH}/${HEIGHT}`);
   var scene = new THREE.Scene();
   console.debug(`Width/Height: ${boxWidth}/${boxHeight} at visible at depth ${depth}`);
@@ -43,68 +49,28 @@ function ParticlesInBox(variables) {
   controls.target.set(0, 0, 0)
 
   // Set properties and object variables. 
-  let properties = new Map();
+  variables.spheres.properties= new Map();
   const indexToObject = new Map();
 
 
   const setInitialProperties = () => {
     for (let key = 0; key < variables.spheres.number; key++) {
-      if (!properties.has(key)) {
-        properties.set(key, {});
+      if (!variables.spheres.properties.has(key)) {
+        variables.spheres.properties.set(key, {});
       }
-      const property = properties.get(key);
+      const property = variables.spheres.properties.get(key);
       set(property, 'velocity.x', getRandom() * variables.spheres.maxSpeed);
       set(property, 'velocity.y', getRandom() * variables.spheres.maxSpeed);
       set(property, 'velocity.z', getRandom() * variables.spheres.maxSpeed);
       set(property, 'position.x', getRandom() * variables.box.widthFactor * boxWidth);
       set(property, 'position.y', getRandom() * variables.box.heightFactor * boxHeight);
       set(property, 'position.z', getRandom() * variables.box.depth);
-      properties.set(key, property);
+      variables.spheres.properties.set(key, property);
     }
   }
 
-  const getProperties = () => {
-    if(properties.size > 0){
-      return properties;
-    } else {
-      setInitialProperties();
-      return properties;
-    }
-  }
-  const updateVelocity = (key, mesh) => {
-    const x = mesh.position.x + getSafe(key, 'velocity.x');
-    const y = mesh.position.y + getSafe(key, 'velocity.y');
-    const z = mesh.position.z + getSafe(key, 'velocity.z');
-    mesh.position.set(x, y, z);
-  }
-
-  const updateWall = (key, mesh) => {
-    let vx = getSafe(key, 'velocity.x');
-    let vy = getSafe(key, 'velocity.y');
-    let vz = getSafe(key, 'velocity.z');
-    if (Math.abs(mesh.position.x) >= variables.box.widthFactor * boxWidth) {
-      vx = -1 * vx
-      setSafe(key, 'velocity.x', vx);
-    }
-    if (Math.abs(mesh.position.y) >= variables.box.heightFactor * boxHeight) {
-      vy = -1 * vy
-      setSafe(key, 'velocity.y', vy);
-    }
-    if (Math.abs(mesh.position.z) >= variables.box.depth) {
-      vz = -1 * vz
-      setSafe(key, 'velocity.z', vz);
-    }
-  }
   const getSafe = (key, prop) => {
-    return get(properties.get(key), prop, get(variables.spheres.initial, prop));
-  }
-
-  const setSafe = (key, prop, value) => {
-    set(properties.get(key), prop, value);
-  }
-  const stepInTimeObject = (key, mesh) => {
-    updateWall(key,mesh);
-    updateVelocity(key,mesh);
+    return get(variables.spheres.properties.get(key), prop, get(variables.spheres.initial, prop));
   }
 
   const setObjects = () => {
@@ -136,10 +102,34 @@ function ParticlesInBox(variables) {
   setInitialProperties();
   setObjects();
   const update = () => {
-    for (let key of indexToObject.keys()) {
-      const mesh = indexToObject.get(key);
-      stepInTimeObject(key, mesh)
-    }
+    // worker.postMessage({ properties: JSON.stringify([...properties]) }); // Post a message with the current variables
+    // console.debug(`Variables ${JSON.stringify(variables)}`);
+    worker.postMessage({ variables}); // Post a message with the current variables
+    worker.onmessage = function (event) {
+      variables = event.data.variables; // Must set new value for next loop
+      for(let key of variables.spheres.properties.keys()){ // Now set value in three js.
+        if(indexToObject.has(key)) {
+          const property = variables.spheres.properties.get(key);
+          const mesh = indexToObject.get(key);
+          // if(key === 0) {
+            console.debug(`${key} ${property.position.x} ${property.position.y} ${property.position.z}`)
+          // }
+          mesh.position.set(property.position.x, property.position.y, property.position.z);        
+          // mesh.position.set(2,2,2);        
+        }
+      }
+    };
+    // for(let key of variables.spheres.properties.keys()){
+    //   if(indexToObject.has(key)) {
+    //     const property = variables.spheres.properties.get(key);
+    //     const mesh = indexToObject.get(key);
+    //     // if(key === 0) {
+    //       console.debug(`${key} ${property.position.x} ${property.position.y} ${property.position.z}`)
+    //     // }
+    //     mesh.position.set(property.position.x, property.position.y, property.position.z);        
+    //     // mesh.position.set(2,2,2);        
+    //   }
+    // }
   }
   return {
     update,

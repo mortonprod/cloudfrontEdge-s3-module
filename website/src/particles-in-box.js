@@ -8,7 +8,6 @@ const particlesInBox = ParticlesInBox(variables);
 var animate = function () {
   requestAnimationFrame(animate);
   particlesInBox.update();
-  
   particlesInBox.renderer.render(particlesInBox.scene, particlesInBox.camera);
 };
 

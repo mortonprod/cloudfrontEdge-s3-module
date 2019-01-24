@@ -14,7 +14,7 @@
   "spheres": {
     "colors": ["red", "green", "white", "blue", "violet"],
     "maxSpeed": 0.5,
-    "number": 100,
+    "number": 1000,
     "initial": {
       "radius": 1,
       "widthSegments": 30,
