@@ -1,15 +1,15 @@
-const Utils = require('./utils');
+const {ParticlesInBox} = require('./processes');
 const variables = require('./variables');
 
 console.debug(`NODE_ENV: ${process.env.NODE_ENV}`);
 
 //Initialize
-const utils = Utils(variables);
+const particlesInBox = ParticlesInBox(variables);
 var animate = function () {
   requestAnimationFrame(animate);
-  utils.update();
+  particlesInBox.update();
   
-  utils.renderer.render(utils.scene, utils.camera);
+  particlesInBox.renderer.render(particlesInBox.scene, particlesInBox.camera);
 };
 
 animate();

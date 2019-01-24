@@ -23,10 +23,10 @@ const visibleWidthAtZDepth = (depth, camera) => {
   return height * camera.aspect;
 };
 
-module.exports = function utils(variables) {
+function ParticlesInBox(variables) {
   // Create canvas element and attach to dom
   var renderer = new THREE.WebGLRenderer();
-  container = document.getElementById(ID);
+  const container = document.getElementById(ID);
   container.appendChild(renderer.domElement);
   const WIDTH = container.clientWidth;
   const HEIGHT = container.clientHeight;
@@ -39,7 +39,7 @@ module.exports = function utils(variables) {
   console.debug(`Width/Height: ${boxWidth}/${boxHeight} at visible at depth ${depth}`);
   renderer.setSize(WIDTH, HEIGHT);
   camera.position.z = depth;
-  controls = new OrbitControls(camera); 
+  const controls = new OrbitControls(camera); 
   controls.target.set(0, 0, 0)
 
   // Set properties and object variables. 
@@ -148,3 +148,5 @@ module.exports = function utils(variables) {
     renderer
   }
 }
+
+export {ParticlesInBox}
