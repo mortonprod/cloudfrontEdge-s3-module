@@ -1,4 +1,13 @@
 {
+  "light": {
+    "color": "0xff0000",
+    "intensity": 1,
+    "position": {
+      "x": 0,
+      "y": 0,
+      "z": 5
+    }
+  },
   "camera": {
     "initial": {
       "position": {
@@ -28,7 +37,7 @@
   "box": {
     "widthFactor": 0.2,
     "heightFactor": 0.2,
-    "depth": 10,
+    "depth": 1,
     "widthSegments": 10,
     "heightSegments": 10,
     "depthSegments": 10,

@@ -42,6 +42,9 @@ function ParticlesInBox(variables) {
   variables.box.boxHeight = boxHeight;
   console.debug(`WIDTH/HEIGHT: ${WIDTH}/${HEIGHT}`);
   var scene = new THREE.Scene();
+  const light = new THREE.PointLight( variables.light.color, variables.light.intensity);
+  light.position.set( variables.light.position.x, variables.light.position.y, variables.light.position.z );
+  scene.add( light );
   console.debug(`Width/Height: ${boxWidth}/${boxHeight} at visible at depth ${depth}`);
   renderer.setSize(WIDTH, HEIGHT);
   camera.position.z = depth;
@@ -77,9 +80,12 @@ function ParticlesInBox(variables) {
     for (let i = 0; i < variables.spheres.number; i++) {
       const colors = variables.spheres.colors;
       var color = colors[Math.floor(Math.random() * colors.length)];
-      const material = new THREE.MeshBasicMaterial({
-        color: color
-      });
+      // const material = new THREE.MeshBasicMaterial({
+      //   color: color
+      // });
+      // const material = new THREE.MeshStandardMaterial({metalness: 1, roughness: 0.5});
+      // const material = new THREE.MeshNormalMaterial();
+      const material = new THREE.MeshPhongMaterial();
       const sphereGeometry = new THREE.SphereGeometry(
         variables.spheres.initial.radius,
         variables.spheres.initial.widthSegments,
@@ -112,7 +118,7 @@ function ParticlesInBox(variables) {
             const property = variables.spheres.properties.get(key);
             const mesh = indexToObject.get(key);
             // if(key === 0) {
-              console.debug(`${key} ${property.position.x} ${property.position.y} ${property.position.z}`)
+              // console.debug(`${key} ${property.position.x} ${property.position.y} ${property.position.z}`)
             // }
             mesh.position.set(property.position.x, property.position.y, property.position.z);        
             // mesh.position.set(2,2,2);        
