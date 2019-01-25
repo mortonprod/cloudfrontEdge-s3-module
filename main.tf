@@ -1,9 +1,9 @@
 terraform {
   backend "s3" {
-    bucket = "wgl-site-terraform-state"
-    key    = "wgl-site"
-    region = "eu-west-2"
-    dynamodb_table = "wgl-site-terraform-state"
+    # bucket = "wgl-site-terraform-state"
+    # key    = "wgl-site"
+    # region = "eu-west-2"
+    # dynamodb_table = "wgl-site-terraform-state"
   }
 }
 
