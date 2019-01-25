@@ -1,3 +1,9 @@
+Module to export static assets to s3. 
+
+Example assets in website folder is three js experiment
+
+# Issues
+
 Need to `export AWS_PROFILE=personal` then `terraform init` outside make file. 
 403 error otherwise.
 

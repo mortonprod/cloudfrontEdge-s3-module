@@ -1,20 +1,3 @@
-terraform {
-  backend "s3" {
-    # bucket = "wgl-site-terraform-state"
-    # key    = "wgl-site"
-    # region = "eu-west-2"
-    # dynamodb_table = "wgl-site-terraform-state"
-  }
-}
-
-provider "aws" {
-  region      = "${var.aws_region}"
-}
-# provider "aws" {
-#   region  = "us-east-1"
-#   alias   = "us-east-1"
-# }
-
 data "archive_file" "file" {
   type        = "zip"
   source_dir = "${path.module}/lambda"
