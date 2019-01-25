@@ -110,19 +110,29 @@ resource "aws_cloudfront_origin_access_identity" "cloudfront_origin_access_ident
   comment = "${var.name}"
 }
 
-resource "aws_s3_bucket_object" "s3_bucket_object_html" {
-  bucket = "${aws_s3_bucket.s3_bucket.id}"
-  content_type = "text/html"
-  key    = "index.html"
-  source = "./website/dist/index.html"
+resource "null_resource" "resource_remove_and_upload_to_s3" {
+  triggers {
+    always = "${uuid()}"
+  }
+  provisioner "local-exec" {
+    command = "aws s3 sync ${var.asset_folder} s3://${aws_s3_bucket.s3_bucket.id}"
+  }
 }
 
-resource "aws_s3_bucket_object" "s3_bucket_object_js" {
-  bucket = "${aws_s3_bucket.s3_bucket.id}"
-  content_type = "text/js"
-  key    = "app.bundle.js"
-  source = "./website/dist/app.bundle.js"
-}
+# resource "aws_s3_bucket_object" "s3_bucket_object_html" {
+#   bucket = "${aws_s3_bucket.s3_bucket.id}"
+#   content_type = "text/html"
+#   key    = "index.html"
+#   # source = "./website/dist/index.html"
+#   source = "${var.}"
+# }
+
+# resource "aws_s3_bucket_object" "s3_bucket_object_js" {
+#   bucket = "${aws_s3_bucket.s3_bucket.id}"
+#   content_type = "text/js"
+#   key    = "app.bundle.js"
+#   source = "./website/dist/app.bundle.js"
+# }
 
 resource "aws_s3_bucket_policy" "s3_bucket_policy" {
   bucket = "${aws_s3_bucket.s3_bucket.id}"

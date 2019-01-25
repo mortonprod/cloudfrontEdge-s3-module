@@ -10,8 +10,7 @@ plan: env lambda
 	terraform plan
 
 apply: env lambda
-	terraform apply
-	aws s3  cp  ./website/index.html s3://wgl-site/index.html
+	terraform apply --auto-approve
 
 lambda:
 	zip -r lambda -X lambda.zip

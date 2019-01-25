@@ -9,3 +9,8 @@ variable "domain_names" {
   description = "Only supports sub domain changes"
   default = ["www.alex-test-site.co.uk", "test.alex-test-site.co.uk"]
 }
+
+variable "asset_folder" {
+  description = "Only supports sub domain changes"
+  default = "./website/dist"
+}
