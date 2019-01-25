@@ -6,10 +6,11 @@ init: env
 	echo PROFILE: ${AWS_PROFILE}
 	terraform init
 		# -backend-config="bucket=wgl-site-terraform-state"
-plan: env lambda
+	touch init
+plan: init env lambda
 	terraform plan
 
-apply: env lambda
+apply: init env lambda
 	terraform apply --auto-approve
 
 lambda:
