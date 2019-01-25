@@ -50,9 +50,12 @@ function ParticlesInBox(variables) {
       light = new THREE.PointLight( variables.light.color, variables.light.intensity);
       light.position.set(variables.light.position.x, variables.light.position.y, variables.light.position.z);
       break;
-      case 'directional':
+    case 'directional':
       light = new THREE.DirectionalLight(variables.light.color, variables.light.intensity);
       light.position.set( variables.light.position.x, variables.light.position.y, variables.light.position.z );
+      break;
+    case 'ambient':
+      light = new THREE.AmbientLight( 0x404040 ); 
       break;
   }
   scene.add( light );
@@ -91,12 +94,24 @@ function ParticlesInBox(variables) {
     for (let i = 0; i < variables.spheres.number; i++) {
       const colors = variables.spheres.colors;
       var color = colors[Math.floor(Math.random() * colors.length)];
+      let material;
       // const material = new THREE.MeshBasicMaterial({
       //   color: color
       // });
-      const material = new THREE.MeshStandardMaterial({color: "#000", metalness: 0.5, roughness: 0.5});
-      // const material = new THREE.MeshNormalMaterial();
-      // const material = new THREE.MeshPhongMaterial();
+      switch(variables.spheres.material.type) {
+        case 'standard':
+          material = new THREE.MeshStandardMaterial({color: color, metalness: variables.spheres.material.metalness, roughness: variables.spheres.material.roughness});
+          break;
+        case 'normal':
+          material = new THREE.MeshNormalMaterial();
+          break;
+        case 'phong':
+          material = new THREE.MeshPhongMaterial();
+          break;
+        case 'basic':
+          material = new new THREE.MeshBasicMaterial({ color });
+          break;
+      }
       const sphereGeometry = new THREE.SphereGeometry(
         variables.spheres.initial.radius,
         variables.spheres.initial.widthSegments,

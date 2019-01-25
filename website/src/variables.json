@@ -1,12 +1,12 @@
 {
   "light": {
     "type": "point",
-    "color": "white",
+    "color": "0x404040",
     "intensity": 1,
     "position": {
       "x": 0,
       "y": 0,
-      "z": 1
+      "z": 10
     }
   },
   "camera": {
@@ -33,12 +33,17 @@
       "phiLength": 360,
       "thetaStart": 0,
       "thetaLength": 360
+    },
+    "material": {
+      "type": "standard",
+      "metalness": 0.5,
+      "roughness": 0.5
     }
   },
   "box": {
     "widthFactor": 0.2,
     "heightFactor": 0.2,
-    "depth": 1,
+    "depth": 10,
     "widthSegments": 10,
     "heightSegments": 10,
     "depthSegments": 10,
