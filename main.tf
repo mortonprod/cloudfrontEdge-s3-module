@@ -6,7 +6,7 @@ data "archive_file" "file" {
 
 resource "aws_lambda_function" "lambda_function_originRequest" {
   function_name    = "lambda_function_originRequest"
-  filename         = "lambda.zip"
+  filename         = "${path.module}/lambda.zip"
   handler          = "handler.originRequest"
   source_code_hash = "${data.archive_file.file.output_base64sha256}"
   role             = "${aws_iam_role.iam_role.arn}"
@@ -19,7 +19,7 @@ resource "aws_lambda_function" "lambda_function_originRequest" {
 
 resource "aws_lambda_function" "lambda_function_originResponse" {
   function_name    = "lambda_function_originResponse"
-  filename         = "lambda.zip"
+  filename         = "${path.module}/lambda.zip"
   handler          = "handler.originResponse"
   source_code_hash = "${data.archive_file.file.output_base64sha256}"
   role             = "${aws_iam_role.iam_role.arn}"
