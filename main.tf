@@ -75,6 +75,12 @@ resource "aws_iam_role_policy_attachment" "iam_role_policy_attachment" {
   policy_arn = "arn:aws:iam::442357565108:policy/service-role/AWSLambdaEdgeExecutionRole-e2b0323f-afc0-4d83-b256-b43117520803"
 }
 
+data "archive_file" "init" {
+  type        = "zip"
+  source_dir = "${var.asset_folder}"
+  output_path = "assets.zip"
+}
+
 
 resource "aws_s3_bucket" "s3_bucket" {
   bucket        = "s3-bucket-${var.name}"
@@ -95,7 +101,7 @@ resource "aws_cloudfront_origin_access_identity" "cloudfront_origin_access_ident
 
 resource "null_resource" "resource_remove_and_upload_to_s3" {
   triggers {
-    always = "${uuid()}"
+    src_hash = "${data.archive_file.init.output_sha}"
   }
   provisioner "local-exec" {
     command = "aws s3 sync ${var.asset_folder} s3://${aws_s3_bucket.s3_bucket.id}"

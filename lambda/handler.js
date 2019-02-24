@@ -83,7 +83,7 @@ exports.originResponse = (event, context, callback) => {
     }];
     headers["content-security-policy"] = [{
         key: "content-security-policy",
-        value: "default-src 'self'; script-src 'self' code.getmdl.io; style-src 'self' code.getmdl.io fonts.googleapis.com; font-src 'self' code.getmdl.io fonts.googleapis.com fonts.gstatic.com",
+        value: "default-src 'self'; script-src 'self' code.getmdl.io code.jquery.com; style-src 'self' code.getmdl.io fonts.googleapis.com; font-src 'self' code.getmdl.io fonts.googleapis.com fonts.gstatic.com",
     }];
     headers["Referrer-Policy"] = [{
         key: "Referrer-Policy",
