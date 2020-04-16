@@ -99,14 +99,14 @@ resource "aws_cloudfront_origin_access_identity" "cloudfront_origin_access_ident
   comment = "${var.name}"
 }
 
-resource "null_resource" "resource_remove_and_upload_to_s3" {
-  triggers {
-    src_hash = "${data.archive_file.init.output_sha}"
-  }
-  provisioner "local-exec" {
-    command = "aws s3 sync ${var.asset_folder} s3://${aws_s3_bucket.s3_bucket.id}"
-  }
-}
+# resource "null_resource" "resource_remove_and_upload_to_s3" {
+#   triggers {
+#     src_hash = "${data.archive_file.init.output_sha}"
+#   }
+#   provisioner "local-exec" {
+#     command = "aws s3 sync ${var.asset_folder} s3://${aws_s3_bucket.s3_bucket.id}"
+#   }
+# }
 
 # resource "aws_s3_bucket_object" "s3_bucket_object_html" {
 #   bucket = "${aws_s3_bucket.s3_bucket.id}"
