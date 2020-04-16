@@ -10,7 +10,7 @@ resource "aws_lambda_function" "lambda_function_originRequest" {
   handler          = "handler.originRequest"
   source_code_hash = "${data.archive_file.file.output_base64sha256}"
   role             = "${aws_iam_role.iam_role.arn}"
-  runtime          = "nodejs8.10"
+  runtime          = "nodejs12.x"
   memory_size      = 128
   timeout          = 1
   publish = true
@@ -23,7 +23,7 @@ resource "aws_lambda_function" "lambda_function_originResponse" {
   handler          = "handler.originResponse"
   source_code_hash = "${data.archive_file.file.output_base64sha256}"
   role             = "${aws_iam_role.iam_role.arn}"
-  runtime          = "nodejs8.10"
+  runtime          = "nodejs12.x"
   memory_size      = 128
   timeout          = 1
   publish = true
