@@ -29,20 +29,12 @@ resource "aws_lambda_function" "lambda_function_originResponse" {
   publish = true
 }
 
-# resource "aws_lambda_alias" "lambda_alias" {
-#   name             = "testalias"
-#   description      = "a sample description"
-#   function_name    = "${aws_lambda_function.lambda_function_originResponse.arn}"
-#   function_version = "1"
-# }
-
 
 resource "aws_lambda_permission" "lambda_permission_request" {
   statement_id   = "AllowExecutionFromCloudFront"
   action         = "lambda:GetFunction"
   function_name  = "${aws_lambda_function.lambda_function_originRequest.function_name}"
   principal      = "replicator.lambda.amazonaws.com"
-  # qualifier = "1"
 }
 
 resource "aws_lambda_permission" "lambda_permission_response" {
@@ -50,7 +42,6 @@ resource "aws_lambda_permission" "lambda_permission_response" {
   action         = "lambda:GetFunction"
   function_name  = "${aws_lambda_function.lambda_function_originResponse.function_name}"
   principal      = "replicator.lambda.amazonaws.com"
-  # qualifier = "1"
 }
 
 data "aws_iam_policy_document" "instance_role" {
@@ -84,44 +75,12 @@ data "archive_file" "init" {
 
 resource "aws_s3_bucket" "s3_bucket" {
   bucket        = "s3-bucket-${var.name}"
-    # acl    = "public-read"
-  # policy        = "${data.template_file.bucket_policy.rendered}"
   force_destroy = true
-
-  # website {
-  #   index_document = "index.html"
-  #   error_document = "404.html"
-  # }
-
 }
 
 resource "aws_cloudfront_origin_access_identity" "cloudfront_origin_access_identity" {
   comment = "${var.name}"
 }
-
-# resource "null_resource" "resource_remove_and_upload_to_s3" {
-#   triggers {
-#     src_hash = "${data.archive_file.init.output_sha}"
-#   }
-#   provisioner "local-exec" {
-#     command = "aws s3 sync ${var.asset_folder} s3://${aws_s3_bucket.s3_bucket.id}"
-#   }
-# }
-
-# resource "aws_s3_bucket_object" "s3_bucket_object_html" {
-#   bucket = "${aws_s3_bucket.s3_bucket.id}"
-#   content_type = "text/html"
-#   key    = "index.html"
-#   # source = "./website/dist/index.html"
-#   source = "${var.}"
-# }
-
-# resource "aws_s3_bucket_object" "s3_bucket_object_js" {
-#   bucket = "${aws_s3_bucket.s3_bucket.id}"
-#   content_type = "text/js"
-#   key    = "app.bundle.js"
-#   source = "./website/dist/app.bundle.js"
-# }
 
 resource "aws_s3_bucket_policy" "s3_bucket_policy" {
   bucket = "${aws_s3_bucket.s3_bucket.id}"
@@ -147,8 +106,6 @@ POLICY
 
 
 data "aws_acm_certificate" "acm_certificate" {
-  # count = "${length(var.domain_names)}"
-  # provider = "aws.us-east-1"
 
   domain   = "${element(split(".", var.domain_names[0]),0) != "" ? replace(var.domain_names[0],"${element(split(".", var.domain_names[0]),0)}.", "") : replace(var.domain_names[0], "/(^)[.]/", "")}"
   statuses = ["ISSUED"]
@@ -162,17 +119,7 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
 
   origin {
     origin_id = "${aws_s3_bucket.s3_bucket.id}"
-
-    # This is the endpoint of the s3 bucket
     domain_name = "${aws_s3_bucket.s3_bucket.bucket_regional_domain_name}"
-
-    # custom_origin_config {
-    #   origin_protocol_policy = "https-only"
-
-    #   http_port            = "80"
-    #   https_port           = "443"
-    #   origin_ssl_protocols = ["TLSv1"]
-    # }
     s3_origin_config {
       origin_access_identity = "origin-access-identity/cloudfront/${aws_cloudfront_origin_access_identity.cloudfront_origin_access_identity.id}"
     }
@@ -227,11 +174,9 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
 }
 
 data "aws_route53_zone" "route53_zome" {
-  # count = "${length(var.domain_names)}"
   name = "${element(split(".", var.domain_names[0]),0) != "" ? replace(var.domain_names[0],"${element(split(".", var.domain_names[0]),0)}.", "") : replace(var.domain_names[0], "/(^)[.]/", "")}"
 }
 
-# // TTL 60 seconds.
 resource "aws_route53_record" "route53_record" {
   count = "${length(var.domain_names)}"
   zone_id = "${data.aws_route53_zone.route53_zome.zone_id}"
