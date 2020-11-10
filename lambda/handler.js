@@ -89,6 +89,10 @@ exports.originResponse = (event, context, callback) => {
         key: "Referrer-Policy",
         value: "same-origin",
     }];
+    headers["Cache-Control"] = [{
+      key: "Cache-Control",
+      value: "max-age=31536000",
+  }];
     
     callback(null, response);
     
