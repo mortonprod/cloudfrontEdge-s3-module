@@ -69,7 +69,7 @@ exports.originResponse = (event, context, callback) => {
 
       response.headers["x-frame-options"] = [{
         key: "x-frame-options",
-        value: "SAME-ORIGIN",
+        value: "SAMEORIGIN",
       }];
 
       response.headers["strict-transport-security"] = [{
