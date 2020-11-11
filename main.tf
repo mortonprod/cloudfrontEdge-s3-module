@@ -150,10 +150,9 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
       lambda_arn = "${aws_lambda_function.lambda_function_originResponse.qualified_arn}"
     }
 
-    min_ttl = "0"
-
-    default_ttl      = "300"                           
-    max_ttl          = "1200"                         
+    min_ttl = "0" // Min time should be zero so we get index file each time.
+    default_ttl      = "86400" // Keep in cache for a 1 day by default.
+    max_ttl          = "2592000" // Keep in cache for a 30 days at the most.
     target_origin_id = "${aws_s3_bucket.s3_bucket.id}"
 
     viewer_protocol_policy = "redirect-to-https"
