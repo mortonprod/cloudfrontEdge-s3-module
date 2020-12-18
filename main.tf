@@ -14,11 +14,6 @@ resource "aws_lambda_function" "lambda_function_originRequest" {
   memory_size      = 128
   timeout          = 1
   publish = true
-  environment {
-    variables = {
-      content_security_policy = "${var.content_security_policy}"
-    }
-  }
 }
 
 
@@ -32,11 +27,6 @@ resource "aws_lambda_function" "lambda_function_originResponse" {
   memory_size      = 128
   timeout          = 1
   publish = true
-  environment {
-    variables = {
-      content_security_policy = "${var.content_security_policy}"
-    }
-  }
 }
 
 
