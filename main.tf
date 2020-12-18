@@ -5,7 +5,7 @@ data "archive_file" "file" {
 }
 
 resource "aws_lambda_function" "lambda_function_originRequest" {
-  function_name    = "lambda_function_originRequest"
+  function_name    = "${var.name}-lambda_function_originRequest"
   filename         = "${path.module}/lambda.zip"
   handler          = "handler.originRequest"
   source_code_hash = "${data.archive_file.file.output_base64sha256}"
@@ -23,7 +23,7 @@ resource "aws_lambda_function" "lambda_function_originRequest" {
 
 
 resource "aws_lambda_function" "lambda_function_originResponse" {
-  function_name    = "lambda_function_originResponse"
+  function_name    = "${var.name}-lambda_function_originResponse"
   filename         = "${path.module}/lambda.zip"
   handler          = "handler.originResponse"
   source_code_hash = "${data.archive_file.file.output_base64sha256}"
@@ -66,7 +66,7 @@ data "aws_iam_policy_document" "instance_role" {
   }
 }
 resource "aws_iam_role" "iam_role" {
-  name = "iam_for_lambda"
+  name = "${var.name}-iam_for_lambda"
 
   assume_role_policy = "${data.aws_iam_policy_document.instance_role.json}"
 }
