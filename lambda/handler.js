@@ -1,49 +1,17 @@
 const path = require('path');
-const extracts = [/\/[a-zA-Z0-9_.-]*\/[a-zA-Z0-9_.-]*/,/\/[a-zA-Z0-9_.-]*/];
+
 /**
- * This part will redirect the client to the correct index file for / or /something or /something/something
- * Note we will only redirect if no extension is present.
+ * Redirect extensionless URIs to their directory index.html, otherwise serve the static asset.
  */
 exports.originRequest = (event, context, callback) => {
   const { request } = event.Records[0].cf;
-  /**
-   * Use node to parse the input request url to determine if we need to append and index.html to it. 
-   */
   const parsedPath = path.parse(request.uri);
-  let newUri;
-  /**
-   * If there is an extension then we just need to served the static assets at that location
-   * Otherwise route to the index.html file
-   */
+
   if (parsedPath.ext === '') {
-    let isMatched = false;
-    /**
-     * If no extension found then we need to find the index.html file
-     * Loop through all regex until we get a match.
-     * TODO: Should be able to do this without a loop but will do for now.
-     */
-    for (let extract of extracts) {
-        let match = request.uri.match(extract);
-        if(match) {
-            newUri = match[0] + '/' + 'index.html';
-            isMatched = true;
-            break
-        }
-    }
-    /**
-     * If we find no match then redirect to root index file.
-     */
-    if(!isMatched) {
-        newUri = '/index.html';
-    }
-  } else {
-    newUri = request.uri;
+    const base = request.uri.endsWith('/') ? request.uri.slice(0, -1) : request.uri;
+    request.uri = (base || '') + '/index.html';
   }
 
-  // Replace the received URI with the URI that includes the index page
-  request.uri = newUri;
-  
-  // Return to CloudFront
   return callback(null, request);
 };
 /**

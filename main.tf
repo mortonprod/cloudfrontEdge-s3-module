@@ -10,7 +10,7 @@ resource "aws_lambda_function" "lambda_function_originRequest" {
   handler          = "handler.originRequest"
   source_code_hash = "${data.archive_file.file.output_base64sha256}"
   role             = "${aws_iam_role.iam_role.arn}"
-  runtime          = "nodejs12.x"
+  runtime          = "nodejs20.x"
   memory_size      = 128
   timeout          = 1
   publish = true
@@ -23,7 +23,7 @@ resource "aws_lambda_function" "lambda_function_originResponse" {
   handler          = "handler.originResponse"
   source_code_hash = "${data.archive_file.file.output_base64sha256}"
   role             = "${aws_iam_role.iam_role.arn}"
-  runtime          = "nodejs12.x"
+  runtime          = "nodejs20.x"
   memory_size      = 128
   timeout          = 1
   publish = true
@@ -115,7 +115,7 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
 
   enabled      = true
   price_class  = "PriceClass_100"
-  http_version = "http1.1"
+  http_version = "http2"
 
   origin {
     origin_id = "${aws_s3_bucket.s3_bucket.id}"
@@ -166,7 +166,7 @@ resource "aws_cloudfront_distribution" "cloudfront_distribution" {
   viewer_certificate {
     acm_certificate_arn      = "${data.aws_acm_certificate.acm_certificate.arn}"
     ssl_support_method       = "sni-only"
-    minimum_protocol_version = "TLSv1"
+    minimum_protocol_version = "TLSv1.2_2021"
   }
   aliases = "${var.domain_names}"
 
