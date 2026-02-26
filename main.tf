@@ -1,3 +1,14 @@
+terraform {
+  required_providers {
+    aws = {
+      source  = "hashicorp/aws"
+    }
+    archive = {
+      source  = "hashicorp/archive"
+    }
+  }
+}
+
 data "archive_file" "file" {
   type        = "zip"
   source_dir = "${path.module}/lambda"
