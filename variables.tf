@@ -6,7 +6,7 @@ variable "aws_region" {
 
 variable "domain_names" {
   description = "Only supports sub domain changes"
-  type = "list"
+  type = list(string)
 }
 
 variable "asset_folder" {
