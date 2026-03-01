@@ -55,7 +55,7 @@ exports.originResponse = (event, context, callback) => {
       }];
       response.headers["content-security-policy"] = [{
           key: "content-security-policy",
-          value: "default-src 'self'; img-src 'self' webpage-screenshot-processor-images-prod.s3.eu-west-2.amazonaws.com; connect-src 'self' ses.alexandermorton.co.uk apipagemelt-prod.alexandermorton.co.uk apipagemelt-dev.alexandermorton.co.uk cdnjs.cloudflare.com; script-src 'self' stackpath.bootstrapcdn.com cdnjs.cloudflare.com code.jquery.com; style-src 'self' stackpath.bootstrapcdn.com cdnjs.cloudflare.com fonts.googleapis.com; font-src 'self' fonts.googleapis.com fonts.gstatic.com",
+          value: "default-src 'self'; img-src 'self' webpage-screenshot-processor-images-prod.s3.eu-west-2.amazonaws.com; connect-src 'self' ses.alexandermorton.co.uk apipagemelt-prod.alexandermorton.co.uk apipagemelt-dev.alexandermorton.co.uk cdnjs.cloudflare.com cdn.jsdelivr.net; script-src 'self' cdn.jsdelivr.net stackpath.bootstrapcdn.com cdnjs.cloudflare.com code.jquery.com; style-src 'self' cdn.jsdelivr.net stackpathq.bootstrapcdn.com cdnjs.cloudflare.com fonts.googleapis.com; font-src 'self' fonts.googleapis.com fonts.gstatic.com",
       }];
       response.headers["Referrer-Policy"] = [{
           key: "Referrer-Policy",
